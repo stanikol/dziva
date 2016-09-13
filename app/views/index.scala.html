@@ -1,0 +1,25 @@
+@(account: Option[Entity[Account]])(implicit webJarAssets: WebJarAssets)
+@_template(account) {
+    <div class="row column">
+        <h1>Авто кондиционеры Рем.Быт.Техника </h1>
+        <ul>
+            <li>
+                25 лет опыта профессионального обслуживания бытовых и промышленых автокондиционеров и климат-систем.
+            </li>
+            <li>
+                Качесто, поверреное временем.
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="medium-6 columns">
+                <img class="thumbnail" src="@routes.Assets.at("img/cat-1417278_1280.jpg")" alt="a cat" />
+        </div>
+        <div class="medium-6 columns">
+            <p>
+                Это сайт находится в состоянии разработки.
+            </p>
+
+        </div>
+    </div>
+}

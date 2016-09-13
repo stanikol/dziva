@@ -1,0 +1,23 @@
+@(account: Option[Entity[Account]], entityItem: Entity[GoodsItem])(implicit webJarAssets: WebJarAssets)
+
+@*
+ **************
+ *@
+@_template(account)  {
+    <table class="table table-striped table-bordered table-condensed table-hover">
+        <h3> @entityItem.data.description  </h3>
+        <tbody>
+            @GoodsItem.header.map { case (sqlName, ruName) =>
+                <tr>
+                    <td>
+                        @ruName
+                    </td>
+                    <td>
+                        @entityItem.data.asMap(sqlName).toString
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}

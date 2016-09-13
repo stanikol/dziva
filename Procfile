@@ -1,0 +1,1 @@
+web: target/universal/stage/bin/dziva -Dhttp.port=${PORT} -Ddb.default.url=${DATABASE_URL} -Ddb.default.driver=org.postgresql.Driver -Dplay.crypto.secret=${APPLICATION_SECRET}

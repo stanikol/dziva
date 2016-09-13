@@ -1,0 +1,29 @@
+@(account: Entity[Account], itemId: Int, editForm: Form[GoodsItem])(implicit webJarAssets: WebJarAssets)
+
+@*
+ **************
+ **************
+ **************
+ *@
+@_template(Some(account))  {
+    <form action = '@routes.RestrictedApplication.edititem(itemId))'>
+        <fieldset>
+
+            @for( (col, coltitle) <- GoodsItem.header ){
+                <div class="row collapse">
+                    <div class="large-1 columns">
+                        <label for="@col" class="right">
+                        <span class="label">@coltitle</span>
+                        </label>
+                    </div>
+                    <div class="large-10 columns">
+                        <input id="@col"  type="text" name="@col" value="@editForm(col).value" />
+                    </div>
+                </div>
+            }
+        <input name='action' type="submit" value="Сохранить"/>
+        <input name='action' type="submit" value="Удалить" />
+        <input name='action' type="submit" value="Новый"/>
+        </fieldset>
+    </form>
+}
