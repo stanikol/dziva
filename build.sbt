@@ -1,6 +1,6 @@
 import com.typesafe.config.ConfigFactory
 
-name := """play-scala-slickpg-play2auth"""
+name := """dziva"""
 
 //common settings for the project and subprojects
 lazy val commonSettings = Seq(
