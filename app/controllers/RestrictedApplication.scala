@@ -120,7 +120,7 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
       {errorForm =>
         database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
           var goodsitem = GoodsItem(row)
-          Ok(views.html.edititem(loggedIn, itemId, FormData.editGoodsItemForm.fill(goodsitem.data)))
+          BadRequest(views.html.edititem(loggedIn, itemId, FormData.editGoodsItemForm.fill(goodsitem.data)))
         }},
 //        Future.successful(BadRequest(views.html.edititem(loggedIn, itemId, errorForm))),
       { ok =>
@@ -137,14 +137,14 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
                 price = 0,
                 qnt = 0,
                 category = "",
-                producedby = None,
+                producedby = Some(""),
                 title = "",
-                trademark = None,
+                trademark = Some(""),
                 description = "",
-                cars = None,
-                codeid = None,
-                codes = None,
-                state = None
+                cars = Some(""),
+                codeid = Some(""),
+                codes = Some(""),
+                state = Some("")
             )
             database.runAsync((Tables.Goods returning Tables.Goods.map(_.id)) += emptyItem).map { id =>
               Redirect(routes.RestrictedApplication.edititem(id))
@@ -170,7 +170,20 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
             } yield (row.id, row.price, row.qnt, row.category, row.producedby, row.title, row.trademark,
                         row.description, row.cars, row.codeid, row.codes, row.state)
 
-            database.runAsync(q.update(GoodsItem.unapply(updatedItem).get))
+//            database.runAsync(q.update(GoodsItem.unapply(updatedItem).get))
+            database.runAsync(q.update((itemId,
+              ok.price,
+              ok.qnt,
+              ok.category,
+              ok.producedby,
+              ok.title,
+              ok.trademark,
+              ok.description,
+              ok.cars,
+              ok.codeid,
+              ok.codes,
+              ok.state)))
+
             database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
               var goodsitem = GoodsItem(row)
               Ok(views.html.edititem(loggedIn, itemId, FormData.editGoodsItemForm.fill(goodsitem.data)))
