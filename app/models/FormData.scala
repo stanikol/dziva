@@ -48,12 +48,12 @@ object FormData {
       "price" -> bigDecimal,
       "qnt" -> number,
       "category" -> text ,
-      "producedBy" -> optional(text),
+      "producedby" -> optional(text),
       "title" -> text,
-      "tradeMark" -> optional(text),
+      "trademark" -> optional(text),
       "description" -> text,
       "cars" -> optional(text),
-      "codeID" -> optional(text),
+      "codeid" -> optional(text),
       "codes" -> optional(text),
       "state" -> optional(text)
     )(GoodsItem.apply)(GoodsItem.unapply)
