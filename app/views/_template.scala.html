@@ -37,10 +37,9 @@
                                 <i class="fi-shopping-cart"></i>
                                 Товары</a>
                             <ul class="submenu menu vertical" data-submenu>
-                                <li><a href="@routes.PublicApplication.goods()">Фильтра</a></li>
-                                <li><a href="#">Компресора</a></li>
-                                <li><a href="#">Масла</a></li>
-                                <li><a href="#">Другое</a></li>
+                                @for(cat <- models.db.GoodsCategories.values){
+                                    <li><a href="@routes.PublicApplication.goods()">@cat</a></li>
+                                }
                             </ul>
                         </li>
                     </ul>

@@ -70,6 +70,7 @@ object SourceCodeGenerator extends App {
 
               //enums
               case "account_role" => "models.db.AccountRole.Value"
+              case "goods_category" => "models.db.GoodsCategories.Value"
 
               case "text" => "String"
               case "varchar" => "String"

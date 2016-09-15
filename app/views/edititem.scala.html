@@ -8,17 +8,36 @@
 @_template(Some(account))  {
     <form action = '@routes.RestrictedApplication.edititem(itemId))'>
         <fieldset>
-
+            <input id="id"  type="hidden" name="id" value="@itemId" />
             @for( (col, coltitle) <- GoodsItem.header ){
                 <div class="row collapse">
+                @if(col == "category"){
                     <div class="large-1 columns">
                         <label for="@col" class="right">
-                        <span class="label">@coltitle</span>
+                            <span class="label">@coltitle</span>
                         </label>
                     </div>
                     <div class="large-10 columns">
-                        <input id="@col"  type="text" name="@col" value="@editForm(col).value" />
+                        <select id="category" name="category">
+                            @for(cat <- models.db.GoodsCategories.values){
+                                @if(editForm("category").value.getOrElse("")==cat.toString){
+                                    <option value="@cat" selected>@cat</option>
+                                } else {
+                                    <option value="@cat" >@cat</option>
+                                }
+                            }
+                        </select>
                     </div>
+                } else {
+                        <div class="large-1 columns">
+                            <label for="@col" class="right">
+                            <span class="label">@coltitle</span>
+                            </label>
+                        </div>
+                        <div class="large-10 columns">
+                            <input id="@col"  type="text" name="@col" value="@editForm(col).value" />
+                        </div>
+                }
                 </div>
             }
         <input name='action' type="submit" value="Сохранить"/>

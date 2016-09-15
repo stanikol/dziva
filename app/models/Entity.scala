@@ -2,7 +2,7 @@ package models
 
 import java.time.OffsetDateTime
 
-import models.db.{AccountRole, Tables}
+import models.db.{AccountRole, Tables, GoodsCategories}
 
 import scala.collection.immutable.ListMap
 
@@ -62,14 +62,19 @@ object Message {
 }
 
 
+//--- id, price , qnt,
+//--- category, title,
+//--- description ,
+//--- producedby, trademark , cars,
+//--- codeid, codes,
+//--- state, pic
 
-  case class GoodsItem(id: Int, price: scala.math.BigDecimal, qnt: Int, category: String, producedby: Option[String] = None,
-                       title: String, trademark: Option[String] = None, description: String, cars: Option[String] = None,
-                       codeid: Option[String] = None, codes: Option[String] = None, state: Option[String] = None){
-//  case class GoodsItem(id: Int, price: BigDecimal, qnt: Int, category: String, title: String,
-//                       producedBy: Option[String], tradeMark: Option[String], description: String,
-//                       cars: Option[String], codeID: Option[String],
-//                       codes: Option[String], state: Option[String]){
+  case class GoodsItem(price: scala.math.BigDecimal, qnt: Int,
+                       category: GoodsCategories.Value, title: String,
+                       description: String,
+                       producedby: Option[String] = None, trademark: Option[String] = None,  cars: Option[String] = None,
+                       codeid: Option[String] = None, codes: Option[String] = None,
+                       state: Option[String] = None, pic: Option[Int]){
     def asMap = CaseClassToMap.apply(this)
 
     object CaseClassToMap {
@@ -82,15 +87,17 @@ object Message {
   }
 
   object GoodsItem {
-    val header: ListMap[String, String] = ListMap("id"->"ID", "price"->"Цена",
-      "qnt"->"Кол", "category"->"Категория", "producedby"->"Производитель", "title"->"Наименование", "trademark"->"Торг. марка",
-      "description"->"Описание", "cars"->"Авто", "codeid"->"Код", "codes"->"Др. коды", "state"->"Состояние")
+    val header: ListMap[String, String] = ListMap(
+      "price"->"Цена", "qnt"->"Кол",
+      "category"->"Категория", "title"->"Наименование",
+      "description"->"Описание",
+      "producedby"->"Производитель", "trademark"->"Торг. марка", "cars"->"Авто",
+      "codeid"->"Код", "codes"->"Др. коды", "state"->"Состояние", "pic"->"Фото")
 
     def apply(row: Tables.GoodsRow): Entity[GoodsItem] =
       Entity(
         id = row.id,
         data = new GoodsItem(
-          id = row.id,
           price = row.price,
           qnt = row.qnt,
           category = row.category,
@@ -101,7 +108,8 @@ object Message {
           cars = row.cars,
           codeid = row.codeid,
           codes = row.codes,
-          state = row.state
+          state = row.state,
+          pic = row.pic
         )
       )
 

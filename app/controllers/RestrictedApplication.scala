@@ -136,7 +136,7 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
                 id = -1,
                 price = 0,
                 qnt = 0,
-                category = "",
+                category = models.db.GoodsCategories.Всё,
                 producedby = Some(""),
                 title = "",
                 trademark = Some(""),
@@ -149,45 +149,46 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
             database.runAsync((Tables.Goods returning Tables.Goods.map(_.id)) += emptyItem).map { id =>
               Redirect(routes.RestrictedApplication.edititem(id))
             }
-          case Some(param) if param == "Сохранить" =>
-            Logger.info(s"сохранить $itemId")
-            val updatedItem = new GoodsItem(
-              itemId,
-              ok.price,
-              ok.qnt,
-              ok.category,
-              ok.producedby,
-              ok.title,
-              ok.trademark,
-              ok.description,
-              ok.cars,
-              ok.codeid,
-              ok.codes,
-              ok.state
-            )
-            val q = for {
-              row <- Tables.Goods if row.id === itemId
-            } yield (row.id, row.price, row.qnt, row.category, row.producedby, row.title, row.trademark,
-                        row.description, row.cars, row.codeid, row.codes, row.state)
-
-//            database.runAsync(q.update(GoodsItem.unapply(updatedItem).get))
-            database.runAsync(q.update((itemId,
-              ok.price,
-              ok.qnt,
-              ok.category,
-              ok.producedby,
-              ok.title,
-              ok.trademark,
-              ok.description,
-              ok.cars,
-              ok.codeid,
-              ok.codes,
-              ok.state)))
-
-            database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
-              var goodsitem = GoodsItem(row)
-              Ok(views.html.edititem(loggedIn, itemId, FormData.editGoodsItemForm.fill(goodsitem.data)))
-            }
+//          case Some(param) if param == "Сохранить" =>
+//            Logger.info(s"сохранить $itemId")
+//            val updatedItem = new GoodsItem(
+//              ok.price,
+//              ok.qnt,
+//              ok.category,
+//              ok.title,
+//              ok.description,
+//              ok.producedby,
+//              ok.trademark,
+//              ok.cars,
+//              ok.codeid,
+//              ok.codes,
+//              ok.state,
+//              ok.pic
+//            )
+//            val q = for {
+//              row <- Tables.Goods if row.id === itemId
+//            } yield (row.price, row.qnt, row.category, row.title, row.description,
+//                      row.producedby, row.trademark, row.cars, row.codeid, row.codes, row.state, row.pic)
+//
+////            database.runAsync(q.update(GoodsItem.unapply(updatedItem).get))
+//            database.runAsync(q.update((
+//              ok.price,
+//              ok.qnt,
+//              ok.category,
+//              ok.title,
+//              ok.description,
+//              ok.producedby,
+//              ok.trademark,
+//              ok.cars,
+//              ok.codeid,
+//              ok.codes,
+//              ok.state,
+//              ok.pic)))
+//
+//            database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
+//              var goodsitem = GoodsItem(row)
+//              Ok(views.html.edititem(loggedIn, itemId, FormData.editGoodsItemForm.fill(goodsitem.data)))
+//            }
           case _ =>
             Logger.error("HHHHHHHHHH")
             database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>

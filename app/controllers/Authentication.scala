@@ -65,7 +65,7 @@ private[controllers] trait AuthConfigTrait extends AuthConfig {
     * Where to redirect the user after a successful login.
     */
   def loginSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[Result] = {
-    Future.successful(Redirect(routes.RestrictedApplication.messages()))
+    Future.successful(Redirect(routes.PublicApplication.goods()))
   }
 
   /**

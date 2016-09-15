@@ -1,7 +1,11 @@
 package models
 
-import play.api.data.{Mapping, Form}
+import java.text.SimpleDateFormat
+
+import play.api.data.{Form, FormError, Mapping}
 import play.api.data.Forms._
+import play.api.data.format.Formats._
+import play.api.data.format.Formatter
 
 case class FormDataLogin(email: String, password: String)
 
@@ -36,26 +40,33 @@ object FormData {
 
   val addAccount = accountForm(nonEmptyText)
 
-
-//  "id"->"ID", "price"->"Цена",
-//  "qnt"->"Кол", "producedBy"->"Производитель", "title"->"Наименование", "tradeMark"->"Торг. марка",
-//  "description"->"Описание", "cars"->"Авто", "codeID"->"Код", "codes"->"Др. коды", "state"->"Состояние")
-//  id: Int, price: scala.math.BigDecimal, qnt: Int, category: String,
-// producedby: Option[String] = None, title: String, trademark: Option[String] = None, description: String, cars: Option[String] = None, codeid: Option[String] = None, codes: Option[String] = None, state: Option[String] = None
+  implicit def goodsCategoriesFormatter: Formatter[db.GoodsCategories.Value] = new Formatter[db.GoodsCategories.Value] {
+    def bind(key: String, data: Map[String, String]) = {
+      try {
+        Right({
+          val id = db.GoodsCategories.values.find(_.toString == key).get.id
+          db.GoodsCategories.apply(id)
+        })
+      } catch {
+        case e: Exception => Left(List(FormError(key, "Your error message")))
+      }
+    }
+    def unbind(key: String, value: db.GoodsCategories.Value) = Map(key -> value.toString)
+  }
   val editGoodsItemForm = Form(
     mapping(
-      "id"  -> number,
-      "price" -> bigDecimal,
-      "qnt" -> number,
-      "category" -> text ,
-      "producedby" -> optional(text),
-      "title" -> text,
-      "trademark" -> optional(text),
+      "price"       -> bigDecimal,
+      "qnt"         -> number,
+      "category"    -> of[db.GoodsCategories.Value],
+      "title"       -> text,
       "description" -> text,
-      "cars" -> optional(text),
-      "codeid" -> optional(text),
-      "codes" -> optional(text),
-      "state" -> optional(text)
+      "producedby"  -> optional(text),
+      "trademark"   -> optional(text),
+      "cars"        -> optional(text),
+      "codeid"      -> optional(text),
+      "codes"       -> optional(text),
+      "state"       -> optional(text),
+      "pic"         -> optional(number)
     )(GoodsItem.apply)(GoodsItem.unapply)
   )
 }

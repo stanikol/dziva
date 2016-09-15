@@ -1,10 +1,6 @@
 @(account: Option[Entity[Account]], goodsSeq: Seq[Entity[GoodsItem]])(implicit webJarAssets: WebJarAssets)
 @_template(account) {
     <div class="row column">
-        <h2>Messages</h2>
-        @account.map { entity =>
-            <h3> @entity.data.name </h3>
-        }
     </div>
     <div class="row column">
         <table class="stack">
@@ -19,13 +15,13 @@
             @for( goodsItem <- goodsSeq ){
                 <tr>
                     @for( (col, colTitle) <- GoodsItem.header ){
-                    <td>
-                        @defining(if(account.isDefined) routes.RestrictedApplication.edititem(goodsItem.id) else routes.PublicApplication.showitem(goodsItem.id)) { formSubmitHref =>
-                            <a href="@formSubmitHref">
-                                @goodsItem.data.asMap(col)
-                            </a>
-                        }
-                    </td>
+                        <td class="css-@col">
+                            @defining(if(account.isDefined && account.get.data.isAdmin) routes.RestrictedApplication.edititem(goodsItem.id) else routes.PublicApplication.showitem(goodsItem.id)) { formSubmitHref =>
+                                <a href="@formSubmitHref">
+                                    @goodsItem.data.asMap(col)
+                                </a>
+                            }
+                        </td>
                     }
                 </tr>
             }

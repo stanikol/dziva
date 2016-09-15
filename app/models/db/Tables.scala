@@ -1,6 +1,6 @@
 package models.db
 
-// AUTO-GENERATED Slick data model [2016-09-13T17:42:41.861+03:00[Europe/Kiev]]
+// AUTO-GENERATED Slick data model [2016-09-15T21:14:47.489+03:00[Europe/Kiev]]
 
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
@@ -16,7 +16,7 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Account.schema ++ Goods.schema ++ Message.schema
+  lazy val schema: profile.SchemaDescription = Account.schema ++ Goods.schema ++ Message.schema ++ Pics.schema
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -65,26 +65,33 @@ trait Tables {
    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
    *  @param price Database column price SqlType(numeric)
    *  @param qnt Database column qnt SqlType(int4)
-   *  @param category Database column category SqlType(varchar), Length(20,true)
-   *  @param producedby Database column producedby SqlType(varchar), Length(255,true), Default(None)
+   *  @param category Database column category SqlType(goods_category)
    *  @param title Database column title SqlType(varchar), Length(50,true)
-   *  @param trademark Database column trademark SqlType(varchar), Length(50,true), Default(None)
    *  @param description Database column description SqlType(varchar), Length(255,true)
+   *  @param producedby Database column producedby SqlType(varchar), Length(255,true), Default(None)
+   *  @param trademark Database column trademark SqlType(varchar), Length(50,true), Default(None)
    *  @param cars Database column cars SqlType(varchar), Length(255,true), Default(None)
    *  @param codeid Database column codeid SqlType(varchar), Length(50,true), Default(None)
    *  @param codes Database column codes SqlType(varchar), Length(255,true), Default(None)
-   *  @param state Database column state SqlType(varchar), Length(20,true), Default(None) */
-  case class GoodsRow(id: Int, price: scala.math.BigDecimal, qnt: Int, category: String, producedby: Option[String] = None, title: String, trademark: Option[String] = None, description: String, cars: Option[String] = None, codeid: Option[String] = None, codes: Option[String] = None, state: Option[String] = None)
+   *  @param state Database column state SqlType(varchar), Length(20,true), Default(None)
+   *  @param pic Database column pic SqlType(int4), Default(None) */
+  case class GoodsRow(id: Int, price: scala.math.BigDecimal, qnt: Int, category: models.db.GoodsCategories.Value, title: String, description: String, producedby: Option[String] = None, trademark: Option[String] = None, cars: Option[String] = None, codeid: Option[String] = None, codes: Option[String] = None, state: Option[String] = None, pic: Option[Int] = None)
   /** GetResult implicit for fetching GoodsRow objects using plain SQL queries */
-  implicit def GetResultGoodsRow(implicit e0: GR[Int], e1: GR[scala.math.BigDecimal], e2: GR[String], e3: GR[Option[String]]): GR[GoodsRow] = GR{
+
+  implicit val goodsCategoriesTypeMapper = MappedColumnType.base[models.db.GoodsCategories.Value, String](
+    { g => g.toString },    //
+    { s => models.db.GoodsCategories.withName(s) }
+  )
+
+  implicit def GetResultGoodsRow(implicit e0: GR[Int], e1: GR[scala.math.BigDecimal], e2: GR[models.db.GoodsCategories.Value], e3: GR[String], e4: GR[Option[String]], e5: GR[Option[Int]]): GR[GoodsRow] = GR{
     prs => import prs._
-    GoodsRow.tupled((<<[Int], <<[scala.math.BigDecimal], <<[Int], <<[String], <<?[String], <<[String], <<?[String], <<[String], <<?[String], <<?[String], <<?[String], <<?[String]))
+    GoodsRow.tupled((<<[Int], <<[scala.math.BigDecimal], <<[Int], <<[models.db.GoodsCategories.Value], <<[String], <<[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[Int]))
   }
   /** Table description of table goods. Objects of this class serve as prototypes for rows in queries. */
   class Goods(_tableTag: Tag) extends Table[GoodsRow](_tableTag, "goods") {
-    def * = (id, price, qnt, category, producedby, title, trademark, description, cars, codeid, codes, state) <> (GoodsRow.tupled, GoodsRow.unapply)
+    def * = (id, price, qnt, category, title, description, producedby, trademark, cars, codeid, codes, state, pic) <> ((GoodsRow.apply _).tupled, GoodsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(price), Rep.Some(qnt), Rep.Some(category), producedby, Rep.Some(title), trademark, Rep.Some(description), cars, codeid, codes, state).shaped.<>({r=>import r._; _1.map(_=> GoodsRow.tupled((_1.get, _2.get, _3.get, _4.get, _5, _6.get, _7, _8.get, _9, _10, _11, _12)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(price), Rep.Some(qnt), Rep.Some(category), Rep.Some(title), Rep.Some(description), producedby, trademark, cars, codeid, codes, state, pic).shaped.<>({r=>import r._; _1.map(_=> GoodsRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get, _7, _8, _9, _10, _11, _12, _13)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column id SqlType(serial), AutoInc, PrimaryKey */
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
@@ -92,16 +99,16 @@ trait Tables {
     val price: Rep[scala.math.BigDecimal] = column[scala.math.BigDecimal]("price")
     /** Database column qnt SqlType(int4) */
     val qnt: Rep[Int] = column[Int]("qnt")
-    /** Database column category SqlType(varchar), Length(20,true) */
-    val category: Rep[String] = column[String]("category", O.Length(20,varying=true))
-    /** Database column producedby SqlType(varchar), Length(255,true), Default(None) */
-    val producedby: Rep[Option[String]] = column[Option[String]]("producedby", O.Length(255,varying=true), O.Default(None))
+    /** Database column category SqlType(goods_category) */
+    val category: Rep[models.db.GoodsCategories.Value] = column[models.db.GoodsCategories.Value]("category")
     /** Database column title SqlType(varchar), Length(50,true) */
     val title: Rep[String] = column[String]("title", O.Length(50,varying=true))
-    /** Database column trademark SqlType(varchar), Length(50,true), Default(None) */
-    val trademark: Rep[Option[String]] = column[Option[String]]("trademark", O.Length(50,varying=true), O.Default(None))
     /** Database column description SqlType(varchar), Length(255,true) */
     val description: Rep[String] = column[String]("description", O.Length(255,varying=true))
+    /** Database column producedby SqlType(varchar), Length(255,true), Default(None) */
+    val producedby: Rep[Option[String]] = column[Option[String]]("producedby", O.Length(255,varying=true), O.Default(None))
+    /** Database column trademark SqlType(varchar), Length(50,true), Default(None) */
+    val trademark: Rep[Option[String]] = column[Option[String]]("trademark", O.Length(50,varying=true), O.Default(None))
     /** Database column cars SqlType(varchar), Length(255,true), Default(None) */
     val cars: Rep[Option[String]] = column[Option[String]]("cars", O.Length(255,varying=true), O.Default(None))
     /** Database column codeid SqlType(varchar), Length(50,true), Default(None) */
@@ -110,6 +117,11 @@ trait Tables {
     val codes: Rep[Option[String]] = column[Option[String]]("codes", O.Length(255,varying=true), O.Default(None))
     /** Database column state SqlType(varchar), Length(20,true), Default(None) */
     val state: Rep[Option[String]] = column[Option[String]]("state", O.Length(20,varying=true), O.Default(None))
+    /** Database column pic SqlType(int4), Default(None) */
+    val pic: Rep[Option[Int]] = column[Option[Int]]("pic", O.Default(None))
+
+    /** Foreign key referencing Pics (database name goods_pic_fkey) */
+    lazy val picsFk = foreignKey("goods_pic_fkey", pic, Pics)(r => Rep.Some(r.id), onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Goods */
   lazy val Goods = new TableQuery(tag => new Goods(tag))
@@ -145,4 +157,27 @@ trait Tables {
   }
   /** Collection-like TableQuery object for table Message */
   lazy val Message = new TableQuery(tag => new Message(tag))
+
+  /** Entity class storing rows of table Pics
+   *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
+   *  @param base64 Database column base64 SqlType(varchar), Default(None) */
+  case class PicsRow(id: Int, base64: Option[String] = None)
+  /** GetResult implicit for fetching PicsRow objects using plain SQL queries */
+  implicit def GetResultPicsRow(implicit e0: GR[Int], e1: GR[Option[String]]): GR[PicsRow] = GR{
+    prs => import prs._
+    PicsRow.tupled((<<[Int], <<?[String]))
+  }
+  /** Table description of table pics. Objects of this class serve as prototypes for rows in queries. */
+  class Pics(_tableTag: Tag) extends Table[PicsRow](_tableTag, "pics") {
+    def * = (id, base64) <> (PicsRow.tupled, PicsRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), base64).shaped.<>({r=>import r._; _1.map(_=> PicsRow.tupled((_1.get, _2)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column id SqlType(serial), AutoInc, PrimaryKey */
+    val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column base64 SqlType(varchar), Default(None) */
+    val base64: Rep[Option[String]] = column[Option[String]]("base64", O.Default(None))
+  }
+  /** Collection-like TableQuery object for table Pics */
+  lazy val Pics = new TableQuery(tag => new Pics(tag))
 }
