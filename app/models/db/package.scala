@@ -7,6 +7,6 @@ package object db {
   }
   
   object GoodsCategories extends Enumeration {
-    val Фильтра, Компрессора, Шланги, Масла, Прокладки, Всё = Value
+    val Фильтра, Компрессора, Шланги, Масла, Прокладки, Разное = Value
   }
 }

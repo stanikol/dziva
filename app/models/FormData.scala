@@ -69,4 +69,14 @@ object FormData {
       "pic"         -> optional(number)
     )(GoodsItem.apply)(GoodsItem.unapply)
   )
+
+  case class GoodsSearchFormData(q: String = "", cat: String = "")
+
+  val searchGoodsForm = Form(
+    mapping("q" -> text, "cat" -> text)
+      (GoodsSearchFormData.apply)(GoodsSearchFormData.unapply)
+  )
+
+
+
 }

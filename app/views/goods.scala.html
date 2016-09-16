@@ -1,6 +1,32 @@
-@(account: Option[Entity[Account]], goodsSeq: Seq[Entity[GoodsItem]])(implicit webJarAssets: WebJarAssets)
+@(account: Option[Entity[Account]], goodsSeq: Seq[Entity[GoodsItem]], searchForm : Form[FormData.GoodsSearchFormData])(implicit webJarAssets: WebJarAssets)
+
+@formSubmitBackRoute = @{ if(account.isDefined && account.get.data.isAdmin) routes.RestrictedApplication.edititem(_)
+                          else routes.PublicApplication.showitem(_) }
+
 @_template(account) {
     <div class="row column">
+        <form action="@routes.PublicApplication.goods()">
+            <legend>Поиск</legend>
+            <fieldset>
+                <div class="row">
+                    <div class="column large-4">
+                        <input placeholder="Запрос" name="q" type="text" value="@searchForm("q").value" />
+                    </div>
+                    <div class="column large-2 right">
+                        <select name="cat">
+                            <option value="">Все</option>
+                            @for(cat <- models.db.GoodsCategories.values){
+                                <option value="@cat" @{ if(cat.toString == searchForm("cat").value.getOrElse("")) "selected" else "" }>@cat</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="column large-4 right">
+                        <input type="submit" value="Искать" class="button"/>
+                    </div>
+                    <div></div>
+                </div>
+            </fieldset>
+        </form>
     </div>
     <div class="row column">
         <table class="stack">
@@ -16,11 +42,9 @@
                 <tr>
                     @for( (col, colTitle) <- GoodsItem.header ){
                         <td class="css-@col">
-                            @defining(if(account.isDefined && account.get.data.isAdmin) routes.RestrictedApplication.edititem(goodsItem.id) else routes.PublicApplication.showitem(goodsItem.id)) { formSubmitHref =>
-                                <a href="@formSubmitHref">
-                                    @goodsItem.data.asMap(col)
-                                </a>
-                            }
+                            <a href="@formSubmitBackRoute(goodsItem.id)">
+                                @goodsItem.data.asMap(col)
+                            </a>
                         </td>
                     }
                 </tr>

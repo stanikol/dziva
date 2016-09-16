@@ -1,10 +1,13 @@
-@(account: Entity[Account], itemId: Int, editForm: Form[GoodsItem])(implicit webJarAssets: WebJarAssets)
+@(account: Entity[Account], goodsItem: GoodsItem4Sale)(implicit webJarAssets: WebJarAssets)
 
 @*
  **************
  **************
  **************
  *@
+@itemId     = @{goodsItem.item.id}
+@item4sale  = @{goodsItem.item.data.asMap}
+
 @_template(Some(account))  {
     <form action = '@routes.RestrictedApplication.edititem(itemId))'>
         <fieldset>
@@ -18,15 +21,25 @@
                         </label>
                     </div>
                     <div class="large-10 columns">
-                        <select id="category" name="category">
+                        <select id="@col" name="@col">
                             @for(cat <- models.db.GoodsCategories.values){
-                                @if(editForm("category").value.getOrElse("")==cat.toString){
+                                if(item4sale("category")==cat){
                                     <option value="@cat" selected>@cat</option>
                                 } else {
                                     <option value="@cat" >@cat</option>
                                 }
                             }
                         </select>
+                    </div>
+                } else { @if(col == "pic") {
+                    <div class="large-1 columns">
+                        <label for="@col" class="right">
+                            <span class="label">@coltitle  </span>
+                        </label>
+                        <img src="data:image/jpeg;charset=utf-8;base64,@goodsItem.pic">
+                    </div>
+                    <div class="large-10 columns">
+                        <input id="@col"  type="text" name="@col" value="@item4sale(col)" />
                     </div>
                 } else {
                         <div class="large-1 columns">
@@ -35,9 +48,9 @@
                             </label>
                         </div>
                         <div class="large-10 columns">
-                            <input id="@col"  type="text" name="@col" value="@editForm(col).value" />
+                            <input id="@col"  type="text" name="@col" value="@item4sale(col)" />
                         </div>
-                }
+                }}
                 </div>
             }
         <input name='action' type="submit" value="Сохранить"/>

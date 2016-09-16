@@ -7,7 +7,7 @@ import com.github.t3hnar.bcrypt.Password
 import jp.t2v.lab.play2.auth.AuthElement
 import models.db.Tables.GoodsRow
 import models.db.{AccountRole, Tables}
-import models.{FormData, FormDataAccount, GoodsItem, Message}
+import models._
 import play.api.Logger
 import play.api.data.Form
 import play.api.mvc.Controller
@@ -120,7 +120,8 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
       {errorForm =>
         database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
           var goodsitem = GoodsItem(row)
-          BadRequest(views.html.edititem(loggedIn, itemId, FormData.editGoodsItemForm.fill(goodsitem.data)))
+          val item4sale = GoodsItem4Sale(GoodsItem(row), "")
+          BadRequest(views.html.edititem(loggedIn, item4sale))
         }},
 //        Future.successful(BadRequest(views.html.edititem(loggedIn, itemId, errorForm))),
       { ok =>
@@ -136,7 +137,7 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
                 id = -1,
                 price = 0,
                 qnt = 0,
-                category = models.db.GoodsCategories.Всё,
+                category = models.db.GoodsCategories.Разное,
                 producedby = Some(""),
                 title = "",
                 trademark = Some(""),
@@ -192,26 +193,13 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
           case _ =>
             Logger.error("HHHHHHHHHH")
             database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
-              var goodsitem = GoodsItem(row)
-              Ok(views.html.edititem(loggedIn, itemId, FormData.editGoodsItemForm.fill(goodsitem.data)))
+              val item4sale = GoodsItem4Sale(GoodsItem(row), "")
+              Ok(views.html.edititem(loggedIn, item4sale))
             }
         }
       }
     )
 
-//    request.getQueryString("action") match {
-//      case Some(param) if param == "Удалить" =>
-//        Logger.info(s"удалить $itemId")
-//
-//      case Some(param) if param == "Сохранить" =>
-//        Logger.info(s"сохранить $itemId")
-//
-//      case _ =>
-//        Logger.error("HHHHHHHHHH")
-//    }
-//    database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map { row =>
-//      Ok( views.html.edititem(loggedIn, FormData.editGoodsItemForm.fill(GoodsItem(row).data) ) )
-//    }
   }
 }
 

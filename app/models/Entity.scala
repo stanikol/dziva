@@ -69,14 +69,13 @@ object Message {
 //--- codeid, codes,
 //--- state, pic
 
-  case class GoodsItem(price: scala.math.BigDecimal, qnt: Int,
-                       category: GoodsCategories.Value, title: String,
-                       description: String,
-                       producedby: Option[String] = None, trademark: Option[String] = None,  cars: Option[String] = None,
-                       codeid: Option[String] = None, codes: Option[String] = None,
-                       state: Option[String] = None, pic: Option[Int]){
-    def asMap = CaseClassToMap.apply(this)
-
+case class GoodsItem(price: scala.math.BigDecimal, qnt: Int,
+                     category: GoodsCategories.Value, title: String,
+                     description: String,
+                     producedby: Option[String] = None, trademark: Option[String] = None,  cars: Option[String] = None,
+                     codeid: Option[String] = None, codes: Option[String] = None,
+                     state: Option[String] = None, pic: Option[Int]){
+  def asMap = {
     object CaseClassToMap {
       def apply(cc: AnyRef) =
         (ListMap[String, String]() /: cc.getClass.getDeclaredFields) {(a, f) =>
@@ -84,36 +83,40 @@ object Message {
           a + (f.getName -> {f.get(cc) match {case Some(x) => x.toString case None => "" case x => x.toString}})
         }
     }
+    CaseClassToMap.apply(this)
   }
+}
 
-  object GoodsItem {
-    val header: ListMap[String, String] = ListMap(
-      "price"->"Цена", "qnt"->"Кол",
-      "category"->"Категория", "title"->"Наименование",
-      "description"->"Описание",
-      "producedby"->"Производитель", "trademark"->"Торг. марка", "cars"->"Авто",
-      "codeid"->"Код", "codes"->"Др. коды", "state"->"Состояние", "pic"->"Фото")
 
-    def apply(row: Tables.GoodsRow): Entity[GoodsItem] =
-      Entity(
-        id = row.id,
-        data = new GoodsItem(
-          price = row.price,
-          qnt = row.qnt,
-          category = row.category,
-          title = row.title,
-          producedby = row.producedby,
-          trademark = row.trademark,
-          description = row.description,
-          cars = row.cars,
-          codeid = row.codeid,
-          codes = row.codes,
-          state = row.state,
-          pic = row.pic
-        )
+object GoodsItem {
+  val header: ListMap[String, String] = ListMap(
+    "price"->"Цена", "qnt"->"Кол",
+    "category"->"Категория", "title"->"Наименование",
+    "description"->"Описание",
+    "producedby"->"Производитель", "trademark"->"Торг. марка", "cars"->"Авто",
+    "codeid"->"Код", "codes"->"Др. коды", "state"->"Состояние", "pic"->"Фото")
+
+  def apply(row: Tables.GoodsRow): Entity[GoodsItem] =
+    Entity(
+      id = row.id,
+      data = new GoodsItem(
+        price = row.price,
+        qnt = row.qnt,
+        category = row.category,
+        title = row.title,
+        producedby = row.producedby,
+        trademark = row.trademark,
+        description = row.description,
+        cars = row.cars,
+        codeid = row.codeid,
+        codes = row.codes,
+        state = row.state,
+        pic = row.pic
       )
+    )
 
-  }
+}
 
 
+case class GoodsItem4Sale(item: Entity[GoodsItem], pic: String)
 

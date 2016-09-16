@@ -4,7 +4,8 @@
         <div class="row">
             <div class="medium-8 medium-centered columns">
                 <label>User
-                    <input type="email" placeholder="write@@your.email" name="email" value="@loginForm("email").value" required/>
+                    <input type="email" placeholder="write@@your.email" name="email" value="admin@@tetrao.eu" required/>
+                    <!--<input type="email" placeholder="write@@your.email" name="email" value="@loginForm("email").value" required/>-->
                     @loginForm.error("email").map { formError =>
                         <span class="form-error is-visible">@formError.message</span>
                     }
@@ -14,7 +15,7 @@
         <div class="row">
             <div class="medium-8 medium-centered columns">
                 <label>Password
-                    <input type="password" placeholder="password" name="password" required />
+                    <input type="password" placeholder="password" name="password" required value="password"/>
                     @loginForm.error("password").map { formError =>
                         <span class="form-error is-visible">@formError.message</span>
                     }
