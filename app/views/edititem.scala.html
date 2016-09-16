@@ -1,19 +1,23 @@
-@(account: Entity[Account], goodsItem: GoodsItem4Sale)(implicit webJarAssets: WebJarAssets)
+@(account: Entity[Account], goodsEntityForm: Form[Entity[GoodsItem]])(implicit webJarAssets: WebJarAssets)
 
 @*
  **************
  **************
  **************
  *@
-@itemId     = @{goodsItem.item.id}
-@item4sale  = @{goodsItem.item.data.asMap}
+@itemId     = @{goodsEntityForm("id").value.getOrElse("0").toInt}
+@item4sale  = @{x: String => goodsEntityForm.data.getOrElse("goodsitem."+x, "")}
 
 @_template(Some(account))  {
+    @goodsEntityForm.hasErrors - @itemId
     <form action = '@routes.RestrictedApplication.edititem(itemId))'>
         <fieldset>
             <input id="id"  type="hidden" name="id" value="@itemId" />
-            @for( (col, coltitle) <- GoodsItem.header ){
+            @for( (col, coltitle) <- models.GoodsItem.header ){
                 <div class="row collapse">
+                @goodsEntityForm(col).errors.foreach { error =>
+                        <span>@error.message</span>
+                    }
                 @if(col == "category"){
                     <div class="large-1 columns">
                         <label for="@col" class="right">
@@ -21,9 +25,9 @@
                         </label>
                     </div>
                     <div class="large-10 columns">
-                        <select id="@col" name="@col">
+                        <select id="@col" name="goodsitem.category">
                             @for(cat <- models.db.GoodsCategories.values){
-                                if(item4sale("category")==cat){
+                                @if(item4sale("category")==cat.toString){
                                     <option value="@cat" selected>@cat</option>
                                 } else {
                                     <option value="@cat" >@cat</option>
@@ -36,10 +40,10 @@
                         <label for="@col" class="right">
                             <span class="label">@coltitle  </span>
                         </label>
-                        <img src="data:image/jpeg;charset=utf-8;base64,@goodsItem.pic">
+                        @*--<img src="data:image/jpeg;charset=utf-8;base64,@goodsEntityForm.pic">*@
                     </div>
                     <div class="large-10 columns">
-                        <input id="@col"  type="text" name="@col" value="@item4sale(col)" />
+                        <input id="@col"  type="text" name="goodsitem.@col" value="@item4sale(col)" />
                     </div>
                 } else {
                         <div class="large-1 columns">
@@ -48,9 +52,10 @@
                             </label>
                         </div>
                         <div class="large-10 columns">
-                            <input id="@col"  type="text" name="@col" value="@item4sale(col)" />
+                            <input id="@col"  type="text" name="goodsitem.@col" value="@item4sale(col)" />
                         </div>
                 }}
+
                 </div>
             }
         <input name='action' type="submit" value="Сохранить"/>

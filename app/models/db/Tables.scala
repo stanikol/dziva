@@ -1,6 +1,6 @@
 package models.db
 
-// AUTO-GENERATED Slick data model [2016-09-15T21:14:47.489+03:00[Europe/Kiev]]
+// AUTO-GENERATED Slick data model [2016-09-17T01:33:38.527+03:00[Europe/Kiev]]
 
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
@@ -16,23 +16,23 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Account.schema ++ Goods.schema ++ Message.schema ++ Pics.schema
+  lazy val schema: profile.SchemaDescription = Account.schema ++ Goods.schema ++ GoodsCategory.schema ++ Message.schema ++ Pics.schema
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
   /** Entity class storing rows of table Account
-   *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
-   *  @param name Database column name SqlType(text)
-   *  @param email Database column email SqlType(text)
-   *  @param password Database column password SqlType(text)
-   *  @param role Database column role SqlType(account_role)
-   *  @param createdAt Database column created_at SqlType(timestamptz)
-   *  @param updatedAt Database column updated_at SqlType(timestamptz) */
+    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
+    *  @param name Database column name SqlType(text)
+    *  @param email Database column email SqlType(text)
+    *  @param password Database column password SqlType(text)
+    *  @param role Database column role SqlType(account_role)
+    *  @param createdAt Database column created_at SqlType(timestamptz)
+    *  @param updatedAt Database column updated_at SqlType(timestamptz) */
   case class AccountRow(id: Int, name: String, email: String, password: String, role: models.db.AccountRole.Value, createdAt: java.time.OffsetDateTime, updatedAt: java.time.OffsetDateTime)
   /** GetResult implicit for fetching AccountRow objects using plain SQL queries */
   implicit def GetResultAccountRow(implicit e0: GR[Int], e1: GR[String], e2: GR[models.db.AccountRole.Value], e3: GR[java.time.OffsetDateTime]): GR[AccountRow] = GR{
     prs => import prs._
-    AccountRow.tupled((<<[Int], <<[String], <<[String], <<[String], <<[models.db.AccountRole.Value], <<[java.time.OffsetDateTime], <<[java.time.OffsetDateTime]))
+      AccountRow.tupled((<<[Int], <<[String], <<[String], <<[String], <<[models.db.AccountRole.Value], <<[java.time.OffsetDateTime], <<[java.time.OffsetDateTime]))
   }
   /** Table description of table account. Objects of this class serve as prototypes for rows in queries. */
   class Account(_tableTag: Tag) extends Table[AccountRow](_tableTag, "account") {
@@ -62,34 +62,28 @@ trait Tables {
   lazy val Account = new TableQuery(tag => new Account(tag))
 
   /** Entity class storing rows of table Goods
-   *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
-   *  @param price Database column price SqlType(numeric)
-   *  @param qnt Database column qnt SqlType(int4)
-   *  @param category Database column category SqlType(goods_category)
-   *  @param title Database column title SqlType(varchar), Length(50,true)
-   *  @param description Database column description SqlType(varchar), Length(255,true)
-   *  @param producedby Database column producedby SqlType(varchar), Length(255,true), Default(None)
-   *  @param trademark Database column trademark SqlType(varchar), Length(50,true), Default(None)
-   *  @param cars Database column cars SqlType(varchar), Length(255,true), Default(None)
-   *  @param codeid Database column codeid SqlType(varchar), Length(50,true), Default(None)
-   *  @param codes Database column codes SqlType(varchar), Length(255,true), Default(None)
-   *  @param state Database column state SqlType(varchar), Length(20,true), Default(None)
-   *  @param pic Database column pic SqlType(int4), Default(None) */
-  case class GoodsRow(id: Int, price: scala.math.BigDecimal, qnt: Int, category: models.db.GoodsCategories.Value, title: String, description: String, producedby: Option[String] = None, trademark: Option[String] = None, cars: Option[String] = None, codeid: Option[String] = None, codes: Option[String] = None, state: Option[String] = None, pic: Option[Int] = None)
+    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
+    *  @param price Database column price SqlType(numeric)
+    *  @param qnt Database column qnt SqlType(int4)
+    *  @param category Database column category SqlType(varchar), Length(20,true)
+    *  @param title Database column title SqlType(varchar), Length(50,true)
+    *  @param description Database column description SqlType(varchar), Length(255,true)
+    *  @param producedby Database column producedby SqlType(varchar), Length(255,true), Default(None)
+    *  @param trademark Database column trademark SqlType(varchar), Length(50,true), Default(None)
+    *  @param cars Database column cars SqlType(varchar), Length(255,true), Default(None)
+    *  @param codeid Database column codeid SqlType(varchar), Length(50,true), Default(None)
+    *  @param codes Database column codes SqlType(varchar), Length(255,true), Default(None)
+    *  @param state Database column state SqlType(varchar), Length(20,true), Default(None)
+    *  @param pic Database column pic SqlType(int4), Default(None) */
+  case class GoodsRow(id: Int, price: scala.math.BigDecimal, qnt: Int, category: String, title: String, description: String, producedby: Option[String] = None, trademark: Option[String] = None, cars: Option[String] = None, codeid: Option[String] = None, codes: Option[String] = None, state: Option[String] = None, pic: Option[Int] = None)
   /** GetResult implicit for fetching GoodsRow objects using plain SQL queries */
-
-  implicit val goodsCategoriesTypeMapper = MappedColumnType.base[models.db.GoodsCategories.Value, String](
-    { g => g.toString },    //
-    { s => models.db.GoodsCategories.withName(s) }
-  )
-
-  implicit def GetResultGoodsRow(implicit e0: GR[Int], e1: GR[scala.math.BigDecimal], e2: GR[models.db.GoodsCategories.Value], e3: GR[String], e4: GR[Option[String]], e5: GR[Option[Int]]): GR[GoodsRow] = GR{
+  implicit def GetResultGoodsRow(implicit e0: GR[Int], e1: GR[scala.math.BigDecimal], e2: GR[String], e3: GR[Option[String]], e4: GR[Option[Int]]): GR[GoodsRow] = GR{
     prs => import prs._
-    GoodsRow.tupled((<<[Int], <<[scala.math.BigDecimal], <<[Int], <<[models.db.GoodsCategories.Value], <<[String], <<[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[Int]))
+      GoodsRow.tupled((<<[Int], <<[scala.math.BigDecimal], <<[Int], <<[String], <<[String], <<[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[Int]))
   }
   /** Table description of table goods. Objects of this class serve as prototypes for rows in queries. */
   class Goods(_tableTag: Tag) extends Table[GoodsRow](_tableTag, "goods") {
-    def * = (id, price, qnt, category, title, description, producedby, trademark, cars, codeid, codes, state, pic) <> ((GoodsRow.apply _).tupled, GoodsRow.unapply)
+    def * = (id, price, qnt, category, title, description, producedby, trademark, cars, codeid, codes, state, pic) <> (GoodsRow.tupled, GoodsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(id), Rep.Some(price), Rep.Some(qnt), Rep.Some(category), Rep.Some(title), Rep.Some(description), producedby, trademark, cars, codeid, codes, state, pic).shaped.<>({r=>import r._; _1.map(_=> GoodsRow.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get, _7, _8, _9, _10, _11, _12, _13)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
@@ -99,8 +93,8 @@ trait Tables {
     val price: Rep[scala.math.BigDecimal] = column[scala.math.BigDecimal]("price")
     /** Database column qnt SqlType(int4) */
     val qnt: Rep[Int] = column[Int]("qnt")
-    /** Database column category SqlType(goods_category) */
-    val category: Rep[models.db.GoodsCategories.Value] = column[models.db.GoodsCategories.Value]("category")
+    /** Database column category SqlType(varchar), Length(20,true) */
+    val category: Rep[String] = column[String]("category", O.Length(20,varying=true))
     /** Database column title SqlType(varchar), Length(50,true) */
     val title: Rep[String] = column[String]("title", O.Length(50,varying=true))
     /** Database column description SqlType(varchar), Length(255,true) */
@@ -120,23 +114,51 @@ trait Tables {
     /** Database column pic SqlType(int4), Default(None) */
     val pic: Rep[Option[Int]] = column[Option[Int]]("pic", O.Default(None))
 
+    /** Foreign key referencing GoodsCategory (database name goods_category_fkey) */
+    lazy val goodsCategoryFk = foreignKey("goods_category_fkey", Rep.Some(category), GoodsCategory)(r => r.name, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
     /** Foreign key referencing Pics (database name goods_pic_fkey) */
     lazy val picsFk = foreignKey("goods_pic_fkey", pic, Pics)(r => Rep.Some(r.id), onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Goods */
   lazy val Goods = new TableQuery(tag => new Goods(tag))
 
+  /** Entity class storing rows of table GoodsCategory
+    *  @param id Database column id SqlType(serial), AutoInc
+    *  @param name Database column name SqlType(varchar), Length(20,true), Default(None) */
+  case class GoodsCategoryRow(id: Int, name: Option[String] = None)
+  /** GetResult implicit for fetching GoodsCategoryRow objects using plain SQL queries */
+  implicit def GetResultGoodsCategoryRow(implicit e0: GR[Int], e1: GR[Option[String]]): GR[GoodsCategoryRow] = GR{
+    prs => import prs._
+      GoodsCategoryRow.tupled((<<[Int], <<?[String]))
+  }
+  /** Table description of table goods_category. Objects of this class serve as prototypes for rows in queries. */
+  class GoodsCategory(_tableTag: Tag) extends Table[GoodsCategoryRow](_tableTag, "goods_category") {
+    def * = (id, name) <> (GoodsCategoryRow.tupled, GoodsCategoryRow.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), name).shaped.<>({r=>import r._; _1.map(_=> GoodsCategoryRow.tupled((_1.get, _2)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column id SqlType(serial), AutoInc */
+    val id: Rep[Int] = column[Int]("id", O.AutoInc)
+    /** Database column name SqlType(varchar), Length(20,true), Default(None) */
+    val name: Rep[Option[String]] = column[Option[String]]("name", O.Length(20,varying=true), O.Default(None))
+
+    /** Uniqueness Index over (name) (database name goods_category_name_key) */
+    val index1 = index("goods_category_name_key", name, unique=true)
+  }
+  /** Collection-like TableQuery object for table GoodsCategory */
+  lazy val GoodsCategory = new TableQuery(tag => new GoodsCategory(tag))
+
   /** Entity class storing rows of table Message
-   *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
-   *  @param content Database column content SqlType(text)
-   *  @param tagList Database column tag_list SqlType(_text), Length(2147483647,false)
-   *  @param createdAt Database column created_at SqlType(timestamptz)
-   *  @param updatedAt Database column updated_at SqlType(timestamptz) */
+    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
+    *  @param content Database column content SqlType(text)
+    *  @param tagList Database column tag_list SqlType(_text), Length(2147483647,false)
+    *  @param createdAt Database column created_at SqlType(timestamptz)
+    *  @param updatedAt Database column updated_at SqlType(timestamptz) */
   case class MessageRow(id: Int, content: String, tagList: List[String], createdAt: java.time.OffsetDateTime, updatedAt: java.time.OffsetDateTime)
   /** GetResult implicit for fetching MessageRow objects using plain SQL queries */
   implicit def GetResultMessageRow(implicit e0: GR[Int], e1: GR[String], e2: GR[List[String]], e3: GR[java.time.OffsetDateTime]): GR[MessageRow] = GR{
     prs => import prs._
-    MessageRow.tupled((<<[Int], <<[String], <<[List[String]], <<[java.time.OffsetDateTime], <<[java.time.OffsetDateTime]))
+      MessageRow.tupled((<<[Int], <<[String], <<[List[String]], <<[java.time.OffsetDateTime], <<[java.time.OffsetDateTime]))
   }
   /** Table description of table message. Objects of this class serve as prototypes for rows in queries. */
   class Message(_tableTag: Tag) extends Table[MessageRow](_tableTag, "message") {
@@ -159,13 +181,13 @@ trait Tables {
   lazy val Message = new TableQuery(tag => new Message(tag))
 
   /** Entity class storing rows of table Pics
-   *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
-   *  @param base64 Database column base64 SqlType(varchar), Default(None) */
+    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
+    *  @param base64 Database column base64 SqlType(varchar), Default(None) */
   case class PicsRow(id: Int, base64: Option[String] = None)
   /** GetResult implicit for fetching PicsRow objects using plain SQL queries */
   implicit def GetResultPicsRow(implicit e0: GR[Int], e1: GR[Option[String]]): GR[PicsRow] = GR{
     prs => import prs._
-    PicsRow.tupled((<<[Int], <<?[String]))
+      PicsRow.tupled((<<[Int], <<?[String]))
   }
   /** Table description of table pics. Objects of this class serve as prototypes for rows in queries. */
   class Pics(_tableTag: Tag) extends Table[PicsRow](_tableTag, "pics") {

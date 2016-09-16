@@ -23,7 +23,13 @@
                             }
                         </select>
                     </div>
-                    <div></div>
+                    <div>
+                    @account.map { user =>
+                        @if(user.data.isAdmin){
+                            <a href="@routes.RestrictedApplication.edititem(1)&action=Новый" class="button">Новый товар</a>
+                        }
+                    </div>
+                    }
                 </div>
             </fieldset>
         </form>

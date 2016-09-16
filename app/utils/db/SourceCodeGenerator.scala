@@ -34,7 +34,7 @@ object SourceCodeGenerator extends App {
   }
   val generatedFileClass = "Tables"
   val generatedFilePackage = "models.db"
-  val generatedFileName = "Tables.scala"
+  val generatedFileName = "TablesA.scala"
   val generatedFileOutputFolder = "app"
 
   val db = TetraoPostgresDriver.api.Database.forURL(

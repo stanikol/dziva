@@ -9,9 +9,7 @@ import models.db.Tables.GoodsRow
 import models.db.{AccountRole, Tables}
 import models._
 import play.api.Logger
-import play.api.data.Form
 import play.api.mvc.Controller
-import play.twirl.api._
 import services.db.DBService
 import utils.db.TetraoPostgresDriver.api._
 
@@ -21,6 +19,7 @@ import scala.concurrent.Future
 @Singleton
 class RestrictedApplication @Inject()(val database: DBService, implicit val webJarAssets: WebJarAssets)
   extends Controller with AuthConfigTrait with AuthElement {
+  import play.api.i18n.Messages.Implicits._
 
   def messages() = AsyncStack(AuthorityKey -> AccountRole.normal) { implicit request =>
     database.runAsync(Tables.Message.sortBy(_.id).result).map { rowSeq =>
@@ -115,91 +114,62 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
     )
   }
 
-  def edititem(itemId: Int) = AsyncStack(AuthorityKey -> AccountRole.admin) { implicit request =>
-    FormData.editGoodsItemForm.bindFromRequest.fold(
-      {errorForm =>
-        database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
-          var goodsitem = GoodsItem(row)
-          val item4sale = GoodsItem4Sale(GoodsItem(row), "")
-          BadRequest(views.html.edititem(loggedIn, item4sale))
-        }},
-//        Future.successful(BadRequest(views.html.edititem(loggedIn, itemId, errorForm))),
-      { ok =>
-        request.getQueryString("action") match {
-          case Some(param) if param == "Удалить" =>
-            Logger.info(s"удалить $itemId")
-            database.runAsync(Tables.Goods.filter(_.id === itemId).delete).map{ x =>
-              Redirect(routes.PublicApplication.goods())
-            }
 
-          case Some(param) if param == "Новый" =>
-            val emptyItem = Tables.GoodsRow(
-                id = -1,
-                price = 0,
-                qnt = 0,
-                category = models.db.GoodsCategories.Разное,
-                producedby = Some(""),
-                title = "",
-                trademark = Some(""),
-                description = "",
-                cars = Some(""),
-                codeid = Some(""),
-                codes = Some(""),
-                state = Some("")
-            )
-            database.runAsync((Tables.Goods returning Tables.Goods.map(_.id)) += emptyItem).map { id =>
-              Redirect(routes.RestrictedApplication.edititem(id))
-            }
-//          case Some(param) if param == "Сохранить" =>
-//            Logger.info(s"сохранить $itemId")
-//            val updatedItem = new GoodsItem(
-//              ok.price,
-//              ok.qnt,
-//              ok.category,
-//              ok.title,
-//              ok.description,
-//              ok.producedby,
-//              ok.trademark,
-//              ok.cars,
-//              ok.codeid,
-//              ok.codes,
-//              ok.state,
-//              ok.pic
-//            )
-//            val q = for {
-//              row <- Tables.Goods if row.id === itemId
-//            } yield (row.price, row.qnt, row.category, row.title, row.description,
-//                      row.producedby, row.trademark, row.cars, row.codeid, row.codes, row.state, row.pic)
-//
-////            database.runAsync(q.update(GoodsItem.unapply(updatedItem).get))
-//            database.runAsync(q.update((
-//              ok.price,
-//              ok.qnt,
-//              ok.category,
-//              ok.title,
-//              ok.description,
-//              ok.producedby,
-//              ok.trademark,
-//              ok.cars,
-//              ok.codeid,
-//              ok.codes,
-//              ok.state,
-//              ok.pic)))
-//
-//            database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
-//              var goodsitem = GoodsItem(row)
-//              Ok(views.html.edititem(loggedIn, itemId, FormData.editGoodsItemForm.fill(goodsitem.data)))
-//            }
-          case _ =>
-            Logger.error("HHHHHHHHHH")
-            database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
-              val item4sale = GoodsItem4Sale(GoodsItem(row), "")
-              Ok(views.html.edititem(loggedIn, item4sale))
-            }
-        }
-      }
+  def edititem(itemId: Int) = AsyncStack(AuthorityKey -> AccountRole.admin) { implicit request =>
+    implicit val goodsCategoriesTypeMapper = MappedColumnType.base[models.db.GoodsCategories.Value, String](
+      { g => g.toString },    //
+      { s => models.db.GoodsCategories.withName(s) }
     )
 
+    val actionParam = request.getQueryString("action")
+    Logger.debug(s"RestrictedApplication.editform($itemId): action == ${actionParam}")
+    val supportedActions = Seq("Сохранить", "Удалить", "Новый")
+    actionParam match {
+      case Some(action) if supportedActions.contains(action) =>
+        action match {
+              case "Удалить" =>
+                database.runAsync(Tables.Goods.filter(_.id === itemId).delete).map(id => Redirect(routes.PublicApplication.goods()))
+              case "Сохранить" => Future.successful {
+                Logger.error(s"Сохранить $itemId")
+                FormData.editGoodsItemForm.bindFromRequest().fold(
+                  { withError =>
+                    Logger.error(s"Ошибка чтения данных формы ${withError.hasErrors}\n")
+                    Logger.error(s"Данные формы  data=${withError.data}\n")
+                    BadRequest(views.html.edititem(loggedIn, withError)) },
+                  { goodsItemEntity  =>
+                    Logger.info(s"Форма прочитана нормально id=${goodsItemEntity.id}")
+                    val q = for {row <- Tables.Goods if row.id === itemId}
+                      yield (row.price, row.qnt, row.category, row.title, row.description,
+                        row.producedby, row.trademark, row.cars, row.codeid, row.codes, row.state, row.pic)
+                    val updateQuery = q.update((goodsItemEntity.data.price, goodsItemEntity.data.qnt,
+                      goodsItemEntity.data.category, goodsItemEntity.data.title, goodsItemEntity.data.description,
+                      goodsItemEntity.data.producedby, goodsItemEntity.data.trademark, goodsItemEntity.data.cars,
+                      goodsItemEntity.data.codeid, goodsItemEntity.data.codes, goodsItemEntity.data.state, goodsItemEntity.data.pic))
+                      database.runAsync( updateQuery )
+                    Ok(views.html.edititem(loggedIn, FormData.editGoodsItemForm.fill(goodsItemEntity)))
+//                    Redirect(routes.RestrictedApplication.edititem(itemId))
+                  }
+                )
+              }
+              case "Новый" =>
+                val newItem = GoodsRow(-1, 0, 0, "Компрессора", "", "", None, None, None, None, None, None, Some(1))
+                database.runAsync((Tables.Goods returning Tables.Goods.map(_.id)) +=  newItem).map{ id =>
+                  Redirect(routes.RestrictedApplication.edititem(id))
+                }
+        }
+      case Some(action) =>
+        Logger.error(s"RestrictedApplication.editform($itemId): Неизвестный action == $action")
+        Future.successful(Ok(s"Неизвестный action == $action"))
+      case None =>
+        Logger.info(s"edititem: no action specified")
+        database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
+          val goodsitem: Entity[GoodsItem] = GoodsItem(row)
+          val form = FormData.editGoodsItemForm.fill(goodsitem)
+          Logger.info(s"withError => data=${form.data}\n")
+
+          Ok(views.html.edititem(loggedIn, form))
+        }
+    }
   }
 }
 

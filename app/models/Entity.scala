@@ -70,11 +70,11 @@ object Message {
 //--- state, pic
 
 case class GoodsItem(price: scala.math.BigDecimal, qnt: Int,
-                     category: GoodsCategories.Value, title: String,
+                     category: String, title: String,
                      description: String,
-                     producedby: Option[String] = None, trademark: Option[String] = None,  cars: Option[String] = None,
-                     codeid: Option[String] = None, codes: Option[String] = None,
-                     state: Option[String] = None, pic: Option[Int]){
+                     producedby: Option[String], trademark: Option[String],  cars: Option[String],
+                     codeid: Option[String], codes: Option[String],
+                     state: Option[String], pic: Option[Int]){
   def asMap = {
     object CaseClassToMap {
       def apply(cc: AnyRef) =
@@ -100,20 +100,28 @@ object GoodsItem {
     Entity(
       id = row.id,
       data = new GoodsItem(
-        price = row.price,
-        qnt = row.qnt,
-        category = row.category,
-        title = row.title,
-        producedby = row.producedby,
-        trademark = row.trademark,
+        price       = row.price,
+        qnt         = row.qnt,
+        category    = row.category,
+        title       = row.title,
+        producedby  = row.producedby,
+        trademark   = row.trademark,
         description = row.description,
-        cars = row.cars,
-        codeid = row.codeid,
-        codes = row.codes,
-        state = row.state,
-        pic = row.pic
+        cars        = row.cars,
+        codeid      = row.codeid,
+        codes       = row.codes,
+        state       = row.state,
+        pic         = row.pic
       )
     )
+
+//  def apply(id: Int, price: BigDecimal, qnt: Int,
+//            category: GoodsCategories.Value=GoodsCategories.Разное, title: String="",
+//            description: String="",
+//            producedby: Option[String] = None, trademark: Option[String] = None, cars: Option[String] = None,
+//            codeid: Option[String] = None, codes: Option[String] = None,
+//            state: Option[String] = None, pic: Option[Int]): Entity[GoodsItem] =
+//    Entity(id, new GoodsItem(price, qnt, category, title, description, producedby, trademark, cars, codeid, codes, state, pic) )
 
 }
 

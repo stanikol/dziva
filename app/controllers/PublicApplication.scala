@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import FormData._
 import play.api.data.Form
 import utils.db.TetraoPostgresDriver.api._
-
+import play.api.i18n.Messages.Implicits._
 
 @Singleton
 class PublicApplication @Inject()(val database: DBService, implicit val webJarAssets: WebJarAssets)
@@ -33,19 +33,20 @@ class PublicApplication @Inject()(val database: DBService, implicit val webJarAs
         ok => searchGoodsForm.fill(ok)
       )
     val words = q.split(" ")
-    implicit val goodsCategoriesTypeMapper = MappedColumnType.base[models.db.GoodsCategories.Value, String](
-      { g => g.toString },    //
-      { s => models.db.GoodsCategories.withName(s) }
-    )
+//    implicit val goodsCategoriesTypeMapper = MappedColumnType.base[models.db.GoodsCategories.Value, String](
+//      { g => g.toString },    //
+//      { s => models.db.GoodsCategories.withName(s) }
+//    )
 
     database.runAsync(Tables.Goods.filter { row: Tables.Goods =>
           val tmp = words map { word =>
-            (row.title ++ row.state ++ row.codeid ++ row.cars
-                ++ row.producedby ++ row.codes ++ row.trademark
+            (row.description ++ row.title ++ row.state.getOrElse("") ++ row.codeid.getOrElse("") ++ row.cars.getOrElse("")
+                ++ row.producedby.getOrElse("") ++ row.codes.getOrElse("") ++ row.trademark.getOrElse("")
             ).toLowerCase.like(s"%${word.toLowerCase}%")
           }
-          tmp.foldLeft(tmp.head.getOrElse(false))((prv, nxt)=> prv && nxt.getOrElse(false))
-        }.filter { row => if(cat.isEmpty) true:Rep[Boolean] else (row.category === models.db.GoodsCategories.withName(cat))
+          tmp.foldLeft(tmp.head)((prv, nxt)=> prv && nxt)
+        }.filter { row => if(cat.nonEmpty) (row.category === cat)
+                           else true: Rep[Boolean]
         }.sortBy(_.id).result).map { rowSeq =>
           val goodsSeq: Seq[Entity[GoodsItem]] = rowSeq.map(GoodsItem(_))
           Ok( views.html.goods(loggedIn, goodsSeq, form) )
