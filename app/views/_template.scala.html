@@ -39,7 +39,7 @@
                             <ul class="submenu menu vertical" data-submenu>
                                 <li><a href="@routes.PublicApplication.goods()">Всё</a></li>
                                 @for(cat <- models.db.GoodsCategories.values){
-                                    <li><a href="@routes.PublicApplication.goods()">@cat</a></li>
+                                    <li><a href="@routes.PublicApplication.goods(cat=cat.toString)">@cat</a></li>
                                 }
                             </ul>
                         </li>

@@ -29,7 +29,7 @@ class PublicApplication @Inject()(val database: DBService, implicit val webJarAs
 
   def goods(q: String = "", cat: String = "") = AsyncStack { implicit request =>
       val form: Form[GoodsSearchFormData] = searchGoodsForm.bindFromRequest.fold(
-        withError => searchGoodsForm.fill(GoodsSearchFormData()),
+        withError => searchGoodsForm.fill(GoodsSearchFormData(q, cat)),
         ok => searchGoodsForm.fill(ok)
       )
     val words = q.split(" ")
