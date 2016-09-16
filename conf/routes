@@ -19,6 +19,6 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /webjars/*file              controllers.WebJarAssets.at(file)
 
 
-GET     /goods                           controllers.PublicApplication.goods()
+GET     /goods                           controllers.PublicApplication.goods(q: String ?= "", cat: String ?= "")
 GET     /showitem                           controllers.PublicApplication.showitem(id: Int)
 GET     /edititem                           controllers.RestrictedApplication.edititem(id: Int)
