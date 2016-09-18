@@ -1,21 +1,21 @@
-@(account: Entity[Account], goodsEntityForm: Form[models.db.Tables.GoodsRow])(implicit webJarAssets: WebJarAssets)
+@(account: Entity[Account], goodsRowForm: Form[models.db.Tables.GoodsRow])(implicit webJarAssets: WebJarAssets)
 
 @*
  **************
  **************
  **************
  *@
-@itemId     = @{goodsEntityForm("id").value.getOrElse("0").toInt}
-@item4sale  = @{x: String => goodsEntityForm.data.getOrElse("goodsitem."+x, "")}
+@itemId     = @{goodsRowForm("id").value.getOrElse("0").toInt}
+@item4sale  = @{ goodsRowForm(_: String).value.getOrElse("") }
 
 @_template(Some(account))  {
-    @goodsEntityForm.hasErrors - @itemId
+    @goodsRowForm.hasErrors - @itemId
     <form action = '@routes.RestrictedApplication.edititem(itemId))'>
         <fieldset>
             <input id="id"  type="hidden" name="id" value="@itemId" />
             @for( (col, coltitle) <- models.GoodsItem.header ){
                 <div class="row collapse">
-                @goodsEntityForm(col).errors.foreach { error =>
+                @goodsRowForm(col).errors.foreach { error =>
                         <span>@error.message</span>
                     }
                 @if(col == "category"){
@@ -40,7 +40,7 @@
                         <label for="@col" class="right">
                             <span class="label">@coltitle  </span>
                         </label>
-                        @*--<img src="data:image/jpeg;charset=utf-8;base64,@goodsEntityForm.pic">*@
+                        @*--<img src="data:image/jpeg;charset=utf-8;base64,@goodsRowForm.pic">*@
                     </div>
                     <div class="large-10 columns">
                         <input id="@col"  type="text" name="goodsitem.@col" value="@item4sale(col)" />
