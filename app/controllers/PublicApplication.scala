@@ -3,8 +3,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import jp.t2v.lab.play2.auth.OptionalAuthElement
-import models.GoodsItem
-import models.{Entity, FormData, FormDataAccount, Message}
+import models._
 import models.db.Tables
 import play.api.mvc.Controller
 import services.db.DBService
@@ -47,8 +46,12 @@ class PublicApplication @Inject()(val database: DBService, implicit val webJarAs
           tmp.foldLeft(tmp.head)((prv, nxt)=> prv && nxt)
         }.filter { row => if(cat.nonEmpty) (row.category === cat)
                            else true: Rep[Boolean]
-        }.sortBy(_.id).result).map { rowSeq =>
-          val goodsSeq: Seq[Entity[GoodsItem]] = rowSeq.map(GoodsItem(_))
+        }.sortBy(_.id).joinLeft(Tables.Pics).on((g, p)=> g.pic === p.id).result
+    ).map { rowSeq =>
+          val goodsSeq: Seq[GoodsItemWithPic] = rowSeq.map{
+            case (goods, None) => GoodsItemWithPic(GoodsItem(goods), "")
+            case (goods, Some(pic)) => GoodsItemWithPic(GoodsItem(goods), pic.base64) }
+
           Ok( views.html.goods(loggedIn, goodsSeq, form) )
         }
       }

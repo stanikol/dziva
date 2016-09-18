@@ -126,5 +126,5 @@ object GoodsItem {
 }
 
 
-case class GoodsItem4Sale(item: Entity[GoodsItem], pic: String)
+case class GoodsItemWithPic(item: Entity[GoodsItem], pic: String)
 

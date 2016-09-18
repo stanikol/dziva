@@ -1,6 +1,6 @@
 package models.db
 
-// AUTO-GENERATED Slick data model [2016-09-17T01:33:38.527+03:00[Europe/Kiev]]
+// AUTO-GENERATED Slick data model [2016-09-18T19:28:09.211+03:00[Europe/Kiev]]
 
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
@@ -182,23 +182,23 @@ trait Tables {
 
   /** Entity class storing rows of table Pics
     *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
-    *  @param base64 Database column base64 SqlType(varchar), Default(None) */
-  case class PicsRow(id: Int, base64: Option[String] = None)
+    *  @param base64 Database column base64 SqlType(varchar) */
+  case class PicsRow(id: Int, base64: String)
   /** GetResult implicit for fetching PicsRow objects using plain SQL queries */
-  implicit def GetResultPicsRow(implicit e0: GR[Int], e1: GR[Option[String]]): GR[PicsRow] = GR{
+  implicit def GetResultPicsRow(implicit e0: GR[Int], e1: GR[String]): GR[PicsRow] = GR{
     prs => import prs._
-      PicsRow.tupled((<<[Int], <<?[String]))
+      PicsRow.tupled((<<[Int], <<[String]))
   }
   /** Table description of table pics. Objects of this class serve as prototypes for rows in queries. */
   class Pics(_tableTag: Tag) extends Table[PicsRow](_tableTag, "pics") {
     def * = (id, base64) <> (PicsRow.tupled, PicsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), base64).shaped.<>({r=>import r._; _1.map(_=> PicsRow.tupled((_1.get, _2)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(base64)).shaped.<>({r=>import r._; _1.map(_=> PicsRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column id SqlType(serial), AutoInc, PrimaryKey */
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
-    /** Database column base64 SqlType(varchar), Default(None) */
-    val base64: Rep[Option[String]] = column[Option[String]]("base64", O.Default(None))
+    /** Database column base64 SqlType(varchar) */
+    val base64: Rep[String] = column[String]("base64")
   }
   /** Collection-like TableQuery object for table Pics */
   lazy val Pics = new TableQuery(tag => new Pics(tag))
