@@ -1,7 +1,9 @@
-@(account: Option[Entity[Account]], goodsWithPicSeq: Seq[GoodsItemWithPic], searchForm : Form[FormData.GoodsSearchFormData])(implicit webJarAssets: WebJarAssets)
+@(account: Option[Entity[Account]], goodsWithPicSeq: Seq[models.db.Tables.GoodsviewRow], searchForm : Form[FormData.GoodsSearchFormData])(implicit webJarAssets: WebJarAssets)
+
 
 @formSubmitBackRoute = @{ if(account.isDefined && account.get.data.isAdmin) routes.RestrictedApplication.edititem(_)
                           else routes.PublicApplication.showitem(_) }
+@import helpers.Hlp._
 
 @_template(account) {
     <div class="row column">
@@ -48,13 +50,13 @@
             @for( goodsItemWithPic <- goodsWithPicSeq ){
                 <tr>
                     <td class="css-pic">
-                        <img src="@goodsItemWithPic.pic">
+                        <img src="@goodsItemWithPic.base64">
                         </img>
                     </td>
                     @for( (col, colTitle) <- GoodsItem.header ){
                         <td class="css-@col">
-                            <a href="@formSubmitBackRoute(goodsItemWithPic.item.id)">
-                                @goodsItemWithPic.item.data.asMap(col)
+                            <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
+                                @goodsItemWithPic.asMap(col)
                             </a>
                         </td>
                     }

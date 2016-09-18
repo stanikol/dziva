@@ -69,23 +69,23 @@ object Message {
 //--- codeid, codes,
 //--- state, pic
 
-case class GoodsItem(price: scala.math.BigDecimal, qnt: Int,
-                     category: String, title: String,
-                     description: String,
-                     producedby: Option[String], trademark: Option[String],  cars: Option[String],
-                     codeid: Option[String], codes: Option[String],
-                     state: Option[String], pic: Option[Int]){
-  def asMap = {
-    object CaseClassToMap {
-      def apply(cc: AnyRef) =
-        (ListMap[String, String]() /: cc.getClass.getDeclaredFields) {(a, f) =>
-          f.setAccessible(true)
-          a + (f.getName -> {f.get(cc) match {case Some(x) => x.toString case None => "" case x => x.toString}})
-        }
-    }
-    CaseClassToMap.apply(this)
-  }
-}
+//case class GoodsItem(price: scala.math.BigDecimal, qnt: Int,
+//                     category: String, title: String,
+//                     description: String,
+//                     producedby: Option[String], trademark: Option[String],  cars: Option[String],
+//                     codeid: Option[String], codes: Option[String],
+//                     state: Option[String], pic: Option[Int]){
+//  def asMap = {
+//    object CaseClassToMap {
+//      def apply(cc: AnyRef) =
+//        (ListMap[String, String]() /: cc.getClass.getDeclaredFields) {(a, f) =>
+//          f.setAccessible(true)
+//          a + (f.getName -> {f.get(cc) match {case Some(x) => x.toString case None => "" case x => x.toString}})
+//        }
+//    }
+//    CaseClassToMap.apply(this)
+//  }
+//}
 
 
 object GoodsItem {
@@ -96,24 +96,24 @@ object GoodsItem {
     "producedby"->"Производитель", "trademark"->"Торг. марка", "cars"->"Авто",
     "codeid"->"Код", "codes"->"Др. коды", "state"->"Состояние", "pic"->"Фото")
 
-  def apply(row: Tables.GoodsRow): Entity[GoodsItem] =
-    Entity(
-      id = row.id,
-      data = new GoodsItem(
-        price       = row.price,
-        qnt         = row.qnt,
-        category    = row.category,
-        title       = row.title,
-        producedby  = row.producedby,
-        trademark   = row.trademark,
-        description = row.description,
-        cars        = row.cars,
-        codeid      = row.codeid,
-        codes       = row.codes,
-        state       = row.state,
-        pic         = row.pic
-      )
-    )
+//  def apply(row: Tables.GoodsRow): Entity[GoodsItem] =
+//    Entity(
+//      id = row.id,
+//      data = new GoodsItem(
+//        price       = row.price,
+//        qnt         = row.qnt,
+//        category    = row.category,
+//        title       = row.title,
+//        producedby  = row.producedby,
+//        trademark   = row.trademark,
+//        description = row.description,
+//        cars        = row.cars,
+//        codeid      = row.codeid,
+//        codes       = row.codes,
+//        state       = row.state,
+//        pic         = row.pic
+//      )
+//    )
 
 //  def apply(id: Int, price: BigDecimal, qnt: Int,
 //            category: GoodsCategories.Value=GoodsCategories.Разное, title: String="",
@@ -126,5 +126,5 @@ object GoodsItem {
 }
 
 
-case class GoodsItemWithPic(item: Entity[GoodsItem], pic: String)
+case class GoodsItemWithPic(goodsRow: Tables.GoodsRow, pic: String)
 

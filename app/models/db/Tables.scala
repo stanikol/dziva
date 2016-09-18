@@ -1,6 +1,6 @@
 package models.db
 
-// AUTO-GENERATED Slick data model [2016-09-18T19:28:09.211+03:00[Europe/Kiev]]
+// AUTO-GENERATED Slick data model [2016-09-18T21:23:09.245+03:00[Europe/Kiev]]
 
 /** Stand-alone Slick data model for immediate use */
 object Tables extends {
@@ -16,7 +16,7 @@ trait Tables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = Account.schema ++ Goods.schema ++ GoodsCategory.schema ++ Message.schema ++ Pics.schema
+  lazy val schema: profile.SchemaDescription = Array(Account.schema, Goods.schema, GoodsCategory.schema, Goodsview.schema, Message.schema, SmallPics.schema).reduceLeft(_ ++ _)
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -116,8 +116,8 @@ trait Tables {
 
     /** Foreign key referencing GoodsCategory (database name goods_category_fkey) */
     lazy val goodsCategoryFk = foreignKey("goods_category_fkey", Rep.Some(category), GoodsCategory)(r => r.name, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
-    /** Foreign key referencing Pics (database name goods_pic_fkey) */
-    lazy val picsFk = foreignKey("goods_pic_fkey", pic, Pics)(r => Rep.Some(r.id), onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+    /** Foreign key referencing SmallPics (database name goods_pic_fkey) */
+    lazy val smallPicsFk = foreignKey("goods_pic_fkey", pic, SmallPics)(r => Rep.Some(r.id), onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
   }
   /** Collection-like TableQuery object for table Goods */
   lazy val Goods = new TableQuery(tag => new Goods(tag))
@@ -147,6 +147,63 @@ trait Tables {
   }
   /** Collection-like TableQuery object for table GoodsCategory */
   lazy val GoodsCategory = new TableQuery(tag => new GoodsCategory(tag))
+
+  /** Entity class storing rows of table Goodsview
+    *  @param id Database column id SqlType(int4), Default(None)
+    *  @param price Database column price SqlType(numeric), Default(None)
+    *  @param qnt Database column qnt SqlType(int4), Default(None)
+    *  @param category Database column category SqlType(varchar), Length(20,true), Default(None)
+    *  @param title Database column title SqlType(varchar), Length(50,true), Default(None)
+    *  @param description Database column description SqlType(varchar), Length(255,true), Default(None)
+    *  @param producedby Database column producedby SqlType(varchar), Length(255,true), Default(None)
+    *  @param trademark Database column trademark SqlType(varchar), Length(50,true), Default(None)
+    *  @param cars Database column cars SqlType(varchar), Length(255,true), Default(None)
+    *  @param codeid Database column codeid SqlType(varchar), Length(50,true), Default(None)
+    *  @param codes Database column codes SqlType(varchar), Length(255,true), Default(None)
+    *  @param state Database column state SqlType(varchar), Length(20,true), Default(None)
+    *  @param pic Database column pic SqlType(int4), Default(None)
+    *  @param base64 Database column base64 SqlType(varchar), Default(None) */
+  case class GoodsviewRow(id: Option[Int] = None, price: Option[scala.math.BigDecimal] = None, qnt: Option[Int] = None, category: Option[String] = None, title: Option[String] = None, description: Option[String] = None, producedby: Option[String] = None, trademark: Option[String] = None, cars: Option[String] = None, codeid: Option[String] = None, codes: Option[String] = None, state: Option[String] = None, pic: Option[Int] = None, base64: Option[String] = None)
+  /** GetResult implicit for fetching GoodsviewRow objects using plain SQL queries */
+  implicit def GetResultGoodsviewRow(implicit e0: GR[Option[Int]], e1: GR[Option[scala.math.BigDecimal]], e2: GR[Option[String]]): GR[GoodsviewRow] = GR{
+    prs => import prs._
+      GoodsviewRow.tupled((<<?[Int], <<?[scala.math.BigDecimal], <<?[Int], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[String], <<?[Int], <<?[String]))
+  }
+  /** Table description of table goodsview. Objects of this class serve as prototypes for rows in queries. */
+  class Goodsview(_tableTag: Tag) extends Table[GoodsviewRow](_tableTag, "goodsview") {
+    def * = (id, price, qnt, category, title, description, producedby, trademark, cars, codeid, codes, state, pic, base64) <> (GoodsviewRow.tupled, GoodsviewRow.unapply)
+
+    /** Database column id SqlType(int4), Default(None) */
+    val id: Rep[Option[Int]] = column[Option[Int]]("id", O.Default(None))
+    /** Database column price SqlType(numeric), Default(None) */
+    val price: Rep[Option[scala.math.BigDecimal]] = column[Option[scala.math.BigDecimal]]("price", O.Default(None))
+    /** Database column qnt SqlType(int4), Default(None) */
+    val qnt: Rep[Option[Int]] = column[Option[Int]]("qnt", O.Default(None))
+    /** Database column category SqlType(varchar), Length(20,true), Default(None) */
+    val category: Rep[Option[String]] = column[Option[String]]("category", O.Length(20,varying=true), O.Default(None))
+    /** Database column title SqlType(varchar), Length(50,true), Default(None) */
+    val title: Rep[Option[String]] = column[Option[String]]("title", O.Length(50,varying=true), O.Default(None))
+    /** Database column description SqlType(varchar), Length(255,true), Default(None) */
+    val description: Rep[Option[String]] = column[Option[String]]("description", O.Length(255,varying=true), O.Default(None))
+    /** Database column producedby SqlType(varchar), Length(255,true), Default(None) */
+    val producedby: Rep[Option[String]] = column[Option[String]]("producedby", O.Length(255,varying=true), O.Default(None))
+    /** Database column trademark SqlType(varchar), Length(50,true), Default(None) */
+    val trademark: Rep[Option[String]] = column[Option[String]]("trademark", O.Length(50,varying=true), O.Default(None))
+    /** Database column cars SqlType(varchar), Length(255,true), Default(None) */
+    val cars: Rep[Option[String]] = column[Option[String]]("cars", O.Length(255,varying=true), O.Default(None))
+    /** Database column codeid SqlType(varchar), Length(50,true), Default(None) */
+    val codeid: Rep[Option[String]] = column[Option[String]]("codeid", O.Length(50,varying=true), O.Default(None))
+    /** Database column codes SqlType(varchar), Length(255,true), Default(None) */
+    val codes: Rep[Option[String]] = column[Option[String]]("codes", O.Length(255,varying=true), O.Default(None))
+    /** Database column state SqlType(varchar), Length(20,true), Default(None) */
+    val state: Rep[Option[String]] = column[Option[String]]("state", O.Length(20,varying=true), O.Default(None))
+    /** Database column pic SqlType(int4), Default(None) */
+    val pic: Rep[Option[Int]] = column[Option[Int]]("pic", O.Default(None))
+    /** Database column base64 SqlType(varchar), Default(None) */
+    val base64: Rep[Option[String]] = column[Option[String]]("base64", O.Default(None))
+  }
+  /** Collection-like TableQuery object for table Goodsview */
+  lazy val Goodsview = new TableQuery(tag => new Goodsview(tag))
 
   /** Entity class storing rows of table Message
     *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
@@ -180,26 +237,29 @@ trait Tables {
   /** Collection-like TableQuery object for table Message */
   lazy val Message = new TableQuery(tag => new Message(tag))
 
-  /** Entity class storing rows of table Pics
+  /** Entity class storing rows of table SmallPics
     *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
+    *  @param name Database column name SqlType(varchar), Length(20,true)
     *  @param base64 Database column base64 SqlType(varchar) */
-  case class PicsRow(id: Int, base64: String)
-  /** GetResult implicit for fetching PicsRow objects using plain SQL queries */
-  implicit def GetResultPicsRow(implicit e0: GR[Int], e1: GR[String]): GR[PicsRow] = GR{
+  case class SmallPicsRow(id: Int, name: String, base64: String)
+  /** GetResult implicit for fetching SmallPicsRow objects using plain SQL queries */
+  implicit def GetResultSmallPicsRow(implicit e0: GR[Int], e1: GR[String]): GR[SmallPicsRow] = GR{
     prs => import prs._
-      PicsRow.tupled((<<[Int], <<[String]))
+      SmallPicsRow.tupled((<<[Int], <<[String], <<[String]))
   }
-  /** Table description of table pics. Objects of this class serve as prototypes for rows in queries. */
-  class Pics(_tableTag: Tag) extends Table[PicsRow](_tableTag, "pics") {
-    def * = (id, base64) <> (PicsRow.tupled, PicsRow.unapply)
+  /** Table description of table small_pics. Objects of this class serve as prototypes for rows in queries. */
+  class SmallPics(_tableTag: Tag) extends Table[SmallPicsRow](_tableTag, "small_pics") {
+    def * = (id, name, base64) <> (SmallPicsRow.tupled, SmallPicsRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(base64)).shaped.<>({r=>import r._; _1.map(_=> PicsRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(name), Rep.Some(base64)).shaped.<>({r=>import r._; _1.map(_=> SmallPicsRow.tupled((_1.get, _2.get, _3.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column id SqlType(serial), AutoInc, PrimaryKey */
     val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column name SqlType(varchar), Length(20,true) */
+    val name: Rep[String] = column[String]("name", O.Length(20,varying=true))
     /** Database column base64 SqlType(varchar) */
     val base64: Rep[String] = column[String]("base64")
   }
-  /** Collection-like TableQuery object for table Pics */
-  lazy val Pics = new TableQuery(tag => new Pics(tag))
+  /** Collection-like TableQuery object for table SmallPics */
+  lazy val SmallPics = new TableQuery(tag => new SmallPics(tag))
 }

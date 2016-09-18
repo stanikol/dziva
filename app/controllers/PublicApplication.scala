@@ -31,34 +31,33 @@ class PublicApplication @Inject()(val database: DBService, implicit val webJarAs
         withError => searchGoodsForm.fill(GoodsSearchFormData(q, cat)),
         ok => searchGoodsForm.fill(ok)
       )
-    val words = q.split(" ")
-//    implicit val goodsCategoriesTypeMapper = MappedColumnType.base[models.db.GoodsCategories.Value, String](
-//      { g => g.toString },    //
-//      { s => models.db.GoodsCategories.withName(s) }
-//    )
+    database.runAsync(
+      Tables.Goodsview
+          .filter{ row =>
+              val tmp = q.split(" ").map { word => s"%$word%" }.map { word =>
+                row.description.like(word) ||
+                row.title.like(word) ||
+                row.state.like(word) ||
+                row.codeid.like(word) ||
+                row.codes.like(word) ||
+                row.cars.like(word) ||
+                row.producedby.like(word) ||
+                row.trademark.like(word)
 
-    database.runAsync(Tables.Goods.filter { row: Tables.Goods =>
-          val tmp = words map { word =>
-            (row.description ++ row.title ++ row.state.getOrElse("") ++ row.codeid.getOrElse("") ++ row.cars.getOrElse("")
-                ++ row.producedby.getOrElse("") ++ row.codes.getOrElse("") ++ row.trademark.getOrElse("")
-            ).toLowerCase.like(s"%${word.toLowerCase}%")
+              }
+              tmp.tail.foldLeft(tmp.head)((prv, nxt)=> prv && nxt)
           }
-          tmp.foldLeft(tmp.head)((prv, nxt)=> prv && nxt)
-        }.filter { row => if(cat.nonEmpty) (row.category === cat)
-                           else true: Rep[Boolean]
-        }.sortBy(_.id).joinLeft(Tables.Pics).on((g, p)=> g.pic === p.id).result
-    ).map { rowSeq =>
-          val goodsSeq: Seq[GoodsItemWithPic] = rowSeq.map{
-            case (goods, None) => GoodsItemWithPic(GoodsItem(goods), "")
-            case (goods, Some(pic)) => GoodsItemWithPic(GoodsItem(goods), pic.base64) }
-
-          Ok( views.html.goods(loggedIn, goodsSeq, form) )
+        .filter { row => (row.category === cat) || cat.isEmpty }
+        .sortBy(_.id).result
+    ).map {
+      rowSeq =>
+          Ok( views.html.goods(loggedIn, rowSeq, form) )
         }
-      }
+  }
 
   def showitem(itemId: Int) = AsyncStack { implicit request =>
-    database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map { row =>
-      Ok( views.html.showitem(loggedIn, GoodsItem(row)) )
+    database.runAsync(Tables.Goodsview.filter(_.id === itemId).result.head).map { goodsRow =>
+      Ok( views.html.showitem(loggedIn, goodsRow) )
     }
   }
 

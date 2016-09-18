@@ -3,6 +3,7 @@ package utils.db
 import java.io.File
 
 import com.typesafe.config.ConfigFactory
+import slick.jdbc.meta.MTable
 import slick.profile.SqlProfile.ColumnOption
 
 import scala.concurrent.Await
@@ -45,7 +46,7 @@ object SourceCodeGenerator extends App {
   )
 
   //the table spatial_ref_sys is an internal table of the postgis extension
-  val modelAction = TetraoPostgresDriver.createModel(Some(TetraoPostgresDriver.defaultTables))
+  val modelAction = TetraoPostgresDriver.createModel(Some(MTable.getTables(None, None, None, Some(Seq("TABLE", "VIEW")))))
 
   val codegen = db.run(modelAction).map { model =>
 

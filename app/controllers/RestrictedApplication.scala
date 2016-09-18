@@ -139,12 +139,9 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
                   { goodsItemEntity  =>
                     Logger.info(s"Форма прочитана нормально id=${goodsItemEntity.id}")
                     val q = for {row <- Tables.Goods if row.id === itemId}
-                      yield (row.price, row.qnt, row.category, row.title, row.description,
+                      yield (row.id, row.price, row.qnt, row.category, row.title, row.description,
                         row.producedby, row.trademark, row.cars, row.codeid, row.codes, row.state, row.pic)
-                    val updateQuery = q.update((goodsItemEntity.data.price, goodsItemEntity.data.qnt,
-                      goodsItemEntity.data.category, goodsItemEntity.data.title, goodsItemEntity.data.description,
-                      goodsItemEntity.data.producedby, goodsItemEntity.data.trademark, goodsItemEntity.data.cars,
-                      goodsItemEntity.data.codeid, goodsItemEntity.data.codes, goodsItemEntity.data.state, goodsItemEntity.data.pic))
+                    val updateQuery = q.update(Tables.GoodsRow.unapply(goodsItemEntity).get)
                       database.runAsync( updateQuery )
                     Ok(views.html.edititem(loggedIn, FormData.editGoodsItemForm.fill(goodsItemEntity)))
 //                    Redirect(routes.RestrictedApplication.edititem(itemId))
@@ -162,9 +159,8 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
         Future.successful(Ok(s"Неизвестный action == $action"))
       case None =>
         Logger.info(s"edititem: no action specified")
-        database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ row =>
-          val goodsitem: Entity[GoodsItem] = GoodsItem(row)
-          val form = FormData.editGoodsItemForm.fill(goodsitem)
+        database.runAsync(Tables.Goods.filter(_.id === itemId).result.head).map{ goodsRow =>
+          val form = FormData.editGoodsItemForm.fill(goodsRow)
           Logger.info(s"withError => data=${form.data}\n")
 
           Ok(views.html.edititem(loggedIn, form))

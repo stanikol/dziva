@@ -52,17 +52,11 @@ object FormData {
     def unbind(key: String, value: db.GoodsCategories.Value) = Map(key -> value.toString)
   }
 
-  def unapplyEntity(e:Entity[GoodsItem]): Option[(Int, GoodsItem)] =  Some((e.id, e.data))
-
-  def applyEntity(id: Int, goodsItem: GoodsItem): Entity[GoodsItem] =
-    Entity(id, new GoodsItem(goodsItem.price, goodsItem.qnt, goodsItem.category, goodsItem.title, goodsItem.description,
-      goodsItem.producedby, goodsItem.trademark, goodsItem.cars, goodsItem.codeid, goodsItem.codes, goodsItem.state, goodsItem.pic) )
-
-
+// id: Int, price: scala.math.BigDecimal, qnt: Int, category: String, title: String,
+//  description: String, producedby: Option[String] = None, trademark: Option[String] = None, cars: Option[String] = None,
+// codeid: Option[String] = None, codes: Option[String] = None, state: Option[String] = None, pic: Option[Int] = None)
   val editGoodsItemForm = Form(mapping(
     "id"  ->  number,
-    "goodsitem" ->
-      mapping(
             "price"       -> bigDecimal,
             "qnt"         -> number,
             "category"    -> text,
@@ -75,8 +69,7 @@ object FormData {
             "codes"       -> optional(text),
             "state"       -> optional(text),
             "pic"         -> optional(number)
-      )(GoodsItem.apply)(GoodsItem.unapply)
-    )(applyEntity _ )(unapplyEntity _)
+    )(db.Tables.GoodsRow.apply)(db.Tables.GoodsRow.unapply)
   )
 
 
