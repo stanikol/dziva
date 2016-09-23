@@ -5,7 +5,6 @@ import java.time.OffsetDateTime
 import javax.annotation.Resource
 import javax.inject.{Inject, Singleton}
 
-import apple.laf.JRSUIUtils.Images
 import com.github.t3hnar.bcrypt.Password
 import jp.t2v.lab.play2.auth.AuthElement
 import models.db.Tables.{GoodsRow, SmallPicsRow}
