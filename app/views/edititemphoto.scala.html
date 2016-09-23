@@ -1,22 +1,23 @@
-@(account: Entity[Account], goodsviewRow: models.db.Tables.GoodsviewRow, picsOpt: Option[models.PageOfPics])(implicit webJarAssets: WebJarAssets)
+@(account: Entity[Account], goodsviewRow: models.db.Tables.GoodsviewRow, picsOpt: Option[models.PageOfPics])(implicit webJarAssets: WebJarAssets, request: Request[AnyContent])
 
 @*
  **************
  *@
+@import views.Utils.getParams
 @_template(Some(account))  {
     @item_table(goodsviewRow)
     @if(picsOpt.nonEmpty){
         <form action="@routes.RestrictedApplication.edititemphoto(id = goodsviewRow.id.get)" enctype="multipart/form-data" method="post">
             <div class="row">
                 <div class="column large-4">
-                    <input type="text" placeholder="Текст для поиска картинок" name="q">
+                    <input type="text" placeholder="Текст для поиска картинок" name="q" value="@getParams("q")"/>
                 </div>
                 <div class="column large-1">
-                    <input type="submit" value="Искать" />
+                    <input type="submit" value="Искать" name="action_search"/>
                 </div>
                 <div></div>
             </div>
-            <input type="submit" value="Выбрать / Сохранить загруженный" name="action"/>
+            <input type="submit" value="Выбрать / Сохранить загруженный" name="action_select"/>
             <input name="newfile" type="file"/>
             <input type="hidden" value="@goodsviewRow.id" name="id">
             <div class="row">

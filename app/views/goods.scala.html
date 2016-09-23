@@ -40,6 +40,8 @@
 
 
     <div class="row">
+        <div class="column large-8">
+
         <table class="stack hover table-scroll column" >
             <thead>
                 <tr>
@@ -62,7 +64,9 @@
                     </td>
                     <td class="css-descript  ">
                         <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
-                            @goodsItemWithPic.description
+                            @goodsItemWithPic.description.getOrElse("").split("\n").map { line =>
+                                @line <br>
+                            }
                         </a>
                     </td>
                     <td class="css-descript  ">
@@ -75,7 +79,9 @@
             }
             </tbody>
         </table>
+        </div>
     </div>
+   @*****************************************
     <div class="row">
         <table class="stack">
             <thead>
@@ -105,4 +111,5 @@
 
         </table>
     </div>
+    *******************************************@
 }

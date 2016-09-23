@@ -10,7 +10,7 @@
 
 @_template(Some(account))  {
     @goodsRowForm.hasErrors - @itemId
-    <form action = '@routes.RestrictedApplication.edititem(itemId))' method="post" enctype="multipart/form-data">
+    <form action = '@routes.RestrictedApplication.edititem(itemId)' method="post">
         <fieldset>
             <input id="id"  type="hidden" name="id" value="@itemId" />
 
@@ -41,14 +41,24 @@
                         <label for="@col" class="right">
                             <span class="label">@coltitle  </span>
                         </label>
-                        @*--<img src="data:image/jpeg;charset=utf-8;base64,@goodsRowForm.pic">*@
                     </div>
                     <div class="large-10 columns">
                         <div class="column large-3">
                             <a href="@routes.RestrictedApplication.edititemphoto(itemId)">
                                 <img src="@base64img.getOrElse("No photo")">
                             </a>
+                            <input type="hidden" name="pic" value="@item4sale(col)"/>
                         </div>
+                    </div>
+                } else { @if(col == "description") {
+                    <div class="large-1 columns">
+                        <label for="@col" class="right">
+                            <span class="label">@coltitle</span>
+                        </label>
+                    </div>
+                    <div class="large-10 columns">
+                        <textarea id="@col" name="@col" rows="3">@item4sale(col)
+                        </textarea>
                     </div>
                 } else {
                         <div class="large-1 columns">
@@ -59,7 +69,7 @@
                         <div class="large-10 columns">
                             <input id="@col"  type="text" name="@col" value="@item4sale(col)" />
                         </div>
-                }}
+                }}}
 
                 </div>
             }

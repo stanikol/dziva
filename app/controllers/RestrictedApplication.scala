@@ -126,7 +126,11 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
 
 
   def edititem(itemId: Int) = AsyncStack(AuthorityKey -> AccountRole.admin) { implicit request =>
-    val actionParam = request.getQueryString("action")
+    val actionParam: Option[String]= // only for POST request. None for oter types.
+      if(request.body.asFormUrlEncoded.isDefined)
+        request.body.asFormUrlEncoded.get.getOrElse("action", Seq.empty[String]).headOption
+      else
+        request.getQueryString("action")
     Logger.debug(s"RestrictedApplication.editform($itemId): action == ${actionParam}")
     val supportedActions = Seq("Сохранить", "Удалить", "Новый")
     actionParam match {
@@ -184,14 +188,15 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
     val getCurrentItem = Tables.Goodsview.filter(_.id === id).result.headOption
     val getSmallPics = Tables.SmallPics.filter(_.name.toLowerCase.like(s"%${searchPhotoStr.getOrElse("").toLowerCase}%"))
 
-    case class EditItemPhoto(id: Int, action: Option[String], q: Option[String], picid: Option[Int])
+    case class EditItemPhoto(id: Int, action_search: Option[String], action_select: Option[String], q: Option[String], picid: Option[Int])
     import play.api.data.Forms._
     import play.api.data.Form
     val editItemPhotoForm = Form(mapping(
-      "id"      ->  number,
-      "action"  ->  optional(text),
-      "q"       ->  optional(text),
-      "picid"   ->  optional(number)
+      "id"              ->  number,
+      "action_search"   ->  optional(text),
+      "action_select"   ->  optional(text),
+      "q"               ->  optional(text),
+      "picid"           ->  optional(number)
     )(EditItemPhoto.apply)(EditItemPhoto.unapply))
 
     editItemPhotoForm.bindFromRequest().fold(
@@ -201,87 +206,44 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
           val pics: Future[Seq[Tables.SmallPicsRow]] = database.runAsync(
               Tables.SmallPics.filter(_.name.toLowerCase.like(s"%${editItemPhoto.q.getOrElse("")}%")).result
           )
+          def okDefaultAction = (for( g <- goodsviewRows; p <- pics)
+            yield  Ok(views.html.edititemphoto(loggedIn, g, Some(PageOfPics(p, 1 , 2))))
+            ).recover{ case exception => BadRequest(s"Ошибка ${exception.getMessage}") }
           editItemPhoto match {
-            case EditItemPhoto(id, Some(action), q, None)  =>
+            case EditItemPhoto(id, None, Some(action_select), q, None) =>
+              Logger.info("Загрузить новый файл")
               request.body.asMultipartFormData.get.file("newfile").map { newPic =>
                 import java.io.File
-                val filename = newPic.filename.substring(newPic.filename.lastIndexOf(File.pathSeparator)+1)
+                val filename = newPic.filename.substring(newPic.filename.lastIndexOf(File.pathSeparator)+1).takeRight(40)
                 val contetType = newPic.contentType
                 val is = new FileInputStream(newPic.ref.file)
                 val byte: Array[Byte] = Stream.continually(is.read).takeWhile(_ != -1).map(_.toByte).toArray
-                val base64: String = new BASE64Encoder().encode(byte)
-                Logger.info(s"Длина нового файла в base64 = ${base64.length}")
-                val pic = SmallPicsRow(-1, filename, s"data:$contetType;charset=utf-8;base64," + base64)
-                database.runAsync(Tables.SmallPics.returning(Tables.SmallPics.map(_.id)) += pic).flatMap { newPicID =>
-                  database.runAsync {
-                    val qry = for (g <- Tables.Goods if g.id === id) yield (g.pic)
-                    qry.update((Some(newPicID)))
-                  }.map { _ =>
-                    Redirect(routes.RestrictedApplication.edititemphoto(id = id))
+                if(byte.length == 0) {
+                  okDefaultAction
+                } else {
+                  val base64: String = new BASE64Encoder().encode(byte)
+                  Logger.info(s"Длина нового файла в base64 = ${base64.length}")
+                  val pic = SmallPicsRow(-1, filename, s"data:$contetType;charset=utf-8;base64," + base64)
+                  database.runAsync(Tables.SmallPics.returning(Tables.SmallPics.map(_.id)) += pic).flatMap { newPicID =>
+                    database.runAsync {
+                      val qry = for (g <- Tables.Goods if g.id === id) yield (g.pic)
+                      qry.update((Some(newPicID)))
+                    }.map { _ =>
+                      Redirect(routes.RestrictedApplication.edititemphoto(id = id))
+                    }
                   }
                 }
               }.getOrElse(Future.successful(BadRequest(" Файл не выбнан")))
-
-            case EditItemPhoto(id, Some(_), _, picOpt @ Some(_:Int) )  =>
+            case EditItemPhoto(id, None, Some(action_select), q, Some(pic) )  =>
+              Logger.info("Выбрать существующую картинку")
               val updatePicQry = for(i <- Tables.Goods if i.id === id) yield i.pic
-              database.runAsync(updatePicQry.update(picOpt)).map (_ => Redirect(routes.RestrictedApplication.edititem(id)))
+              database.runAsync(updatePicQry.update(Some(pic))).map (_ => Redirect(routes.RestrictedApplication.edititem(id)))
             case _ =>
-              (for( g <- goodsviewRows; p <- pics)
-                yield  Ok(views.html.edititemphoto(loggedIn, g, Some(PageOfPics(p, 1 , 2))))
-              ).recover{ case exception => BadRequest(s"Ошибка ${exception.getMessage}") }
+              Logger.info("По-умолчанию")
+              okDefaultAction
           }
       }
     )
-//    Logger.error(s"asFormUrlEncoded = ${request.body.asFormUrlEncoded.get}")
-//    Future.successful(Ok(s"params = ${request.asMap}"))
-//    request.getQueryString("action") match {
-//      case Some(action) if action == "Сохранить загруженный"=>
-//          Logger.error("Saving FILE")
-//          request.body.asMultipartFormData.get.file("file").map { newPic =>
-//            import java.io.File
-//            val filename = newPic.filename.takeRight(19)
-//            val contetType = newPic.contentType
-//            val is = new FileInputStream(newPic.ref.file)
-//            val byte: Array[Byte] = Stream.continually(is.read).takeWhile(_ != -1).map(_.toByte).toArray
-//            val base64: String = new BASE64Encoder().encode(byte)
-//            val pic = SmallPicsRow(-1, filename, s"data:$contetType;charset=utf-8;base64," + base64)
-//            database.runAsync(Tables.SmallPics.returning(Tables.SmallPics.map(_.id)) += pic).flatMap { newPicID =>
-//              database.runAsync {
-//                val qry = for (g <- Tables.Goods if g.id === id) yield (g.pic)
-//                qry.update((Some(newPicID)))
-//              }.map { _ =>
-//                Redirect(routes.RestrictedApplication.edititemphoto(id = id))
-//              }
-//            }
-//          }.getOrElse(Future.successful(BadRequest(" Файл не выбнан")))
-//      case Some(action) if action == "Выбрать" && request.getQueryString("pic").isDefined =>
-//
-////        Future.successful(Redirect(routes.RestrictedApplication.edititemphoto(id = id)))
-//        Future.successful(Ok(s"You choseg ${request.getQueryString("pic").get}"))
-//      case _ =>
-//        Logger.error("No Action")
-//        database.runAsync(getCurrentItem).flatMap({
-//          case Some(goodsviewItem) if Seq(searchPhotoStr, currentPage, totalPages).forall(_.nonEmpty) &&
-//            currentPage.get <= totalPages.get =>
-//            database.runAsync(getSmallPics.drop(10*currentPage.get).take(10).result).map { smallpicsRow =>
-//              Ok(html.edititemphoto(loggedIn, goodsviewItem, Some(PageOfPics(smallpicsRow, currentPage.get, totalPages.get))))
-//            }
-//          case Some(goodsviewItem) if searchPhotoStr.isDefined && Seq(currentPage, totalPages).forall(_.isEmpty) =>
-//            database.runAsync(getSmallPics.result).map { smallpicsRow =>
-//              Ok(html.edititemphoto(loggedIn, goodsviewItem,
-//                Some(PageOfPics(smallpicsRow.take(10), 1, Math.ceil( totalPages.get.toDouble / smallpicsRow.length ).toInt))
-//              ))
-//            }
-//          case Some(goodsviewItem) if  Seq(searchPhotoStr, currentPage, totalPages).forall(_.isEmpty) =>
-//            database.runAsync(getSmallPics.result).map { smallpicsRow =>
-//              Ok(html.edititemphoto(loggedIn, goodsviewItem,
-//                Some(PageOfPics(smallpicsRow.take(10), 1,1))
-//              ))
-//            }
-//          case None =>
-//            Future.successful(BadRequest(s"No such item $id"))
-//        })
-//    }
 
 
   }
