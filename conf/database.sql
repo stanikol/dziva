@@ -45,13 +45,17 @@ INSERT INTO account (name, email, role, password) values ('Bob Minion', 'bob@tet
 INSERT INTO message (content, tag_list) values ('Welcome to the templatesite!', '{"welcome", "first message", "english"}');
 
 -- SNC
-create table pics (
+create table small_pics (
     id              serial primary key,
-    base64            varchar
+    name            varchar(40) not null,
+    base64          varchar not null
     )
 ;
 
-insert into pics(base64) values ('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDABQODxIPDRQSERIXFhQYHzMhHxwcHz8tLyUzSkFOTUlB
+insert into small_pics values (
+1,
+'pic-1',
+' data:image/jpeg;charset=utf-8;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDABQODxIPDRQSERIXFhQYHzMhHxwcHz8tLyUzSkFOTUlB
                                     SEZSXHZkUldvWEZIZoxob3p9hIWET2ORm4+AmnaBhH//2wBDARYXFx8bHzwhITx/VEhUf39/f39/
                                     f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f3//wAARCAJhAyADASIA
                                     AhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQA
@@ -413,31 +417,39 @@ insert into pics(base64) values ('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDABQODxIPDRQSER
                                     RRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB/9k='
 );
 
-CREATE TYPE goods_category AS ENUM (
-    'Фильтра',
-    'Компрессора',
-    'Шланги',
-    'Масла',
-    'Прокладки',
-    'Разное'
-);
+create table goods_category(
+    id          serial,
+    name        varchar(20) unique);
+
+insert into goods_category(name) values ('Фильтра');
+insert into goods_category(name) values ('Компрессора');
+insert into goods_category(name) values ('Шланги');
+insert into goods_category(name) values ('Масла');
+insert into goods_category(name) values ('Прокладки');
+insert into goods_category(name) values ('Разное');
+
 
 create table goods (
     id              serial primary key,
     price           numeric         not null,
     qnt             int             not null,
-    category        goods_category  not null,
+    category        varchar(20)     references goods_category(name) not null,
     title           varchar(50)     not null,
     description     varchar(255)    not null,
-    producedby      varchar(255),
-    trademark       varchar(50),
-    cars            varchar(255),
-    codeid          varchar(50),
-    codes           varchar(255),
-    state           varchar(20),
-    pic             int references pics(id)
+    producedby      varchar(255)    default null,
+    trademark       varchar(50)     default null,
+    cars            varchar(255)    default null,
+    codeid          varchar(50)     default null,
+    codes           varchar(255)    default null,
+    state           varchar(20)     default null,
+    pic             int references small_pics(id) default null
 );
 
+
+create view goodsview as
+    select goods.*, small_pics.base64
+    from goods left join small_pics
+            on goods.pic=small_pics.id;
 
 --- id, price , qnt,
 --- category, title,
