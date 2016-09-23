@@ -1,0 +1,34 @@
+@(account: Entity[Account], goodsviewRow: models.db.Tables.GoodsviewRow, picsOpt: Option[models.PageOfPics])(implicit webJarAssets: WebJarAssets)
+
+@*
+ **************
+ *@
+@_template(Some(account))  {
+    @item_table(goodsviewRow)
+    @if(picsOpt.nonEmpty){
+        <form action="@routes.RestrictedApplication.edititemphoto(id = goodsviewRow.id.get)" enctype="multipart/form-data" method="post">
+            <div class="row">
+                <div class="column large-4">
+                    <input type="text" placeholder="Текст для поиска картинок" name="q">
+                </div>
+                <div class="column large-1">
+                    <input type="submit" value="Искать" />
+                </div>
+                <div></div>
+            </div>
+            <input type="submit" value="Выбрать / Сохранить загруженный" name="action"/>
+            <input name="newfile" type="file"/>
+            <input type="hidden" value="@goodsviewRow.id" name="id">
+            <div class="row">
+                @for(pic <- picsOpt.get.pics){
+                        <div class="column small-2">
+                            <input type="radio" value="@pic.id" name="picid">@pic.name
+                            <img src="@pic.base64">
+                            </input>
+                        </div>
+                }
+                <div></div>
+            </div>
+        </form>
+    }
+}

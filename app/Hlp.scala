@@ -6,6 +6,7 @@ import scala.collection.immutable.ListMap
 package helpers {
 
   import models.db
+  import models.db.Tables.GoodsRow
 
   object Hlp {
 
@@ -22,6 +23,21 @@ package helpers {
     }
   }
 
-}
+implicit def convertGoodsviewRowToGoodsRow(goodsviewRow: models.db.Tables.GoodsviewRow): models.db.Tables.GoodsRow =
+    GoodsRow(
+      id          = goodsviewRow.id.get,
+      price       = goodsviewRow.price.get,
+      qnt         = goodsviewRow.qnt.get,
+      category    = goodsviewRow.category.get,
+      title       = goodsviewRow.title.get,
+      description = goodsviewRow.description.get,
+      producedby  = goodsviewRow.producedby,
+      trademark   = goodsviewRow.trademark,
+      cars        = goodsviewRow.cars,
+      codeid      = goodsviewRow.codeid,
+      codes       = goodsviewRow.codes,
+      state       = goodsviewRow.state,
+      pic         = goodsviewRow.pic)
+  }
 
 }

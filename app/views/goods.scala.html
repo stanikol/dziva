@@ -6,7 +6,7 @@
 @import helpers.Hlp._
 
 @_template(account) {
-    <div class="row column">
+    <div class="row ">
         <form action="@routes.PublicApplication.goods()">
             <legend>Поиск</legend>
             <fieldset>
@@ -36,7 +36,47 @@
             </fieldset>
         </form>
     </div>
-    <div class="row column">
+
+
+
+    <div class="row">
+        <table class="stack hover table-scroll column" >
+            <thead>
+                <tr>
+                    <th width="20%"> Фото </th>
+                    <th> Описание </th>
+                    <th> Цена </th>
+                </tr>
+            </thead>
+            <tbody>
+            @for( goodsItemWithPic <- goodsWithPicSeq ){
+                <tr>
+                    <td class="css-pic ">
+                        <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
+                            @if(goodsItemWithPic.base64.isEmpty){
+                                    NO PHOTO
+                            } else {
+                                <img src="@goodsItemWithPic.base64"/>
+                            }
+                        </a>
+                    </td>
+                    <td class="css-descript  ">
+                        <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
+                            @goodsItemWithPic.description
+                        </a>
+                    </td>
+                    <td class="css-descript  ">
+                        <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
+                            @goodsItemWithPic.price
+                        </a>
+                    </td>
+                    </a>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
         <table class="stack">
             <thead>
                 <tr>

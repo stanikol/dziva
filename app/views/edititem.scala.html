@@ -1,4 +1,4 @@
-@(account: Entity[Account], goodsRowForm: Form[models.db.Tables.GoodsRow])(implicit webJarAssets: WebJarAssets)
+@(account: Entity[Account], goodsRowForm: Form[models.db.Tables.GoodsRow], base64img: Option[String]=None)(implicit webJarAssets: WebJarAssets)
 
 @*
  **************
@@ -10,9 +10,10 @@
 
 @_template(Some(account))  {
     @goodsRowForm.hasErrors - @itemId
-    <form action = '@routes.RestrictedApplication.edititem(itemId))'>
+    <form action = '@routes.RestrictedApplication.edititem(itemId))' method="post" enctype="multipart/form-data">
         <fieldset>
             <input id="id"  type="hidden" name="id" value="@itemId" />
+
             @for( (col, coltitle) <- models.GoodsItem.header ){
                 <div class="row collapse">
                 @goodsRowForm(col).errors.foreach { error =>
@@ -25,7 +26,7 @@
                         </label>
                     </div>
                     <div class="large-10 columns">
-                        <select id="@col" name="goodsitem.category">
+                        <select id="@col" name="category">
                             @for(cat <- models.db.GoodsCategories.values){
                                 @if(item4sale("category")==cat.toString){
                                     <option value="@cat" selected>@cat</option>
@@ -43,7 +44,11 @@
                         @*--<img src="data:image/jpeg;charset=utf-8;base64,@goodsRowForm.pic">*@
                     </div>
                     <div class="large-10 columns">
-                        <input id="@col"  type="text" name="goodsitem.@col" value="@item4sale(col)" />
+                        <div class="column large-3">
+                            <a href="@routes.RestrictedApplication.edititemphoto(itemId)">
+                                <img src="@base64img.getOrElse("No photo")">
+                            </a>
+                        </div>
                     </div>
                 } else {
                         <div class="large-1 columns">
@@ -52,15 +57,21 @@
                             </label>
                         </div>
                         <div class="large-10 columns">
-                            <input id="@col"  type="text" name="goodsitem.@col" value="@item4sale(col)" />
+                            <input id="@col"  type="text" name="@col" value="@item4sale(col)" />
                         </div>
                 }}
 
                 </div>
             }
-        <input name='action' type="submit" value="Сохранить"/>
-        <input name='action' type="submit" value="Удалить" />
-        <input name='action' type="submit" value="Новый"/>
+            <div class="row collapse">
+                <div class="column large-3">
+                    <input name='action' type="submit" value="Сохранить"/>
+                    <input name='action' type="submit" value="Удалить" />
+                    <input name='action' type="submit" value="Новый"/>
+
+                </div>
+                <div></div>
+            </div>
         </fieldset>
     </form>
 }

@@ -90,11 +90,26 @@ object Message {
 
 object GoodsItem {
   val header: ListMap[String, String] = ListMap(
+    "price"->"Цена",
+    "qnt"->"Кол",
+    "category"->"Категория",
+    "title"->"Наименование",
+    "description"->"Описание",
+    "producedby"->"Производитель",
+    "trademark"->"Торг. марка",
+    "cars"->"Авто",
+    "codeid"->"Код",
+    "codes"->"Др. коды",
+    "state"->"Состояние",
+    "pic"->"Фото"
+  )
+
+  val headerFull: ListMap[String, String] = ListMap(
     "price"->"Цена", "qnt"->"Кол",
     "category"->"Категория", "title"->"Наименование",
     "description"->"Описание",
     "producedby"->"Производитель", "trademark"->"Торг. марка", "cars"->"Авто",
-    "codeid"->"Код", "codes"->"Др. коды", "state"->"Состояние", "pic"->"Фото")
+    "codeid"->"Код", "codes"->"Др. коды", "state"->"Состояние"/*, "pic"->"Фото"*/)
 
 //  def apply(row: Tables.GoodsRow): Entity[GoodsItem] =
 //    Entity(
@@ -128,3 +143,20 @@ object GoodsItem {
 
 case class GoodsItemWithPic(goodsRow: Tables.GoodsRow, pic: String)
 
+//object GoodsItemWithPic {
+//  val headerGoods: ListMap[String, String] = ListMap(
+//  "pic"->"Фото",
+//  "price"->"Цена",
+//  "qnt"->"Кол",
+//  "category"->"Категория",
+//  "title"->"Наименование",
+//  "description"->"Описание",
+//  "producedby"->"Производитель",
+//  "trademark"->"Торг. марка",
+//  "cars"->"Авто",
+//  "codeid"->"Код",
+//  "codes"->"Др. коды",
+//  "state"->"Состояние",
+//  )
+//
+//}

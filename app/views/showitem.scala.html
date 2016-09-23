@@ -1,28 +1,8 @@
-@(account: Option[Entity[Account]], goodsRow: models.db.Tables.GoodsviewRow)(implicit webJarAssets: WebJarAssets)
+@(account: Option[Entity[Account]], goodsviewRow: models.db.Tables.GoodsviewRow)(implicit webJarAssets: WebJarAssets)
 
 @*
  **************
  *@
-@import helpers.Hlp._
-@goodsRowAsMap = @{goodsRow.asMap}
 @_template(account)  {
-    <table class="table table-striped table-bordered table-condensed table-hover">
-        <h3> @goodsRow.description  </h3>
-        <tbody>
-            <tr>
-                <td><img src="@goodsRow.base64"></td>
-            </tr>
-            @GoodsItem.header.map { case (sqlName, ruName) =>
-                <tr>
-                    <td>
-                        @ruName
-                    </td>
-                    <td>
-                        @goodsRowAsMap(sqlName)
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
+    @item_table(goodsviewRow)
 }

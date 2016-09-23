@@ -82,4 +82,6 @@ object FormData {
 
 
 
+
 }
+case class PageOfPics(pics: Seq[db.Tables.SmallPicsRow], page: Int, total: Int)
