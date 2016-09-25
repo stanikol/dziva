@@ -14,17 +14,19 @@ lazy val root = (project in file("."))
 	.settings(commonSettings: _*)
 	.settings(routesGenerator := InjectedRoutesGenerator)
 	.settings(
+		libraryDependencies += cache,
 		libraryDependencies += "com.typesafe.slick" %% "slick" % "3.1.1",
 		libraryDependencies += "com.typesafe.slick" %% "slick-codegen" % "3.1.1",
 		libraryDependencies += "com.github.tminglei" %% "slick-pg" % "0.14.1",
 		libraryDependencies += "com.github.tminglei" %% "slick-pg_date2" % "0.14.1",
 		libraryDependencies += "com.typesafe.play" %% "play-slick" % "2.0.2",
 		libraryDependencies += "jp.t2v" %% "play2-auth" % "0.14.2",
-		libraryDependencies += play.sbt.Play.autoImport.cache,
+		//libraryDependencies += play.sbt.Play.autoImport.cache,
 		libraryDependencies += "com.github.t3hnar" %% "scala-bcrypt" % "2.6",
     libraryDependencies += "org.webjars" %% "webjars-play" % "2.5.0",
-		 libraryDependencies += "org.webjars" % "foundation" % "6.2.3", /// snc
-		libraryDependencies +=  "org.webjars" % "foundation-icon-fonts" % "d596a3cfb3" /// snc
+		/// libraryDependencies += "org.webjars" % "foundation" % "6.2.3", /// snc
+		/// libraryDependencies +=  "org.webjars" % "foundation-icon-fonts" % "d596a3cfb3" /// snc
+		libraryDependencies += "org.webjars" % "bootstrap" % "3.3.7-1"
 	)
   .enablePlugins(PlayScala)
 
