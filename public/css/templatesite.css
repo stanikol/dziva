@@ -44,3 +44,17 @@ td {
 td.css-codes {
     font-size: 30%;
 }
+/*******
+#pagination {
+    position: relative;
+}
+
+#pagination ul {
+    position: absolute;
+    right: 0;
+}
+
+#pagination ul .current a {
+    color: #666;
+}
+*******/
