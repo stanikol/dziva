@@ -9,8 +9,8 @@
 @****************************************
 * Helper generating navigation links    *
 ****************************************@
-@link(newPage: Int, newOrderBy: Option[Int] = None) = @{
-    routes.PublicApplication.goods(p = newPage)
+@link(newPage: Int) = @{
+    routes.PublicApplication.goods(q = searchForm("q").value.getOrElse(""), c = searchForm("c").value.getOrElse(""), p = newPage)
 }
 
 @_template(account) {
@@ -23,7 +23,7 @@
                     <select  name="c">
                         <option value="">Все</option>
                         @for(cat <- dao.categories){
-                            @if(cat == searchForm("c").value.getOrElse("")){
+                            @if(cat == searchForm("c").value.get){
                                 <option value="@cat" selected>@cat</option>
                             } else {
                                 <option value="@cat">@cat</option>

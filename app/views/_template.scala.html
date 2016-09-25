@@ -59,7 +59,7 @@
                             <li><a href="@routes.PublicApplication.goods()">Всё</a></li>
                             <li role="separator" class="divider"></li>
                             @for(cat <- dao.categories){
-                                <li><a href="@routes.PublicApplication.goods(c = cat)">@cat</a></li>
+                                    <li><a href="@routes.PublicApplication.goods(c = cat)">@cat</a></li>
                             }
                         </ul>
                     </li>
