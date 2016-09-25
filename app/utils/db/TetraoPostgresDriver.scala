@@ -31,10 +31,10 @@ trait TetraoPostgresDriver extends ExPostgresDriver
 
     implicit val strListTypeMapper = new SimpleArrayJdbcType[String]("text").to(_.toList)
 
-    implicit val tgoods_category = createEnumJdbcType("goods_category", GoodsCategories)
-    implicit val lgoods_category = createEnumListJdbcType("goods_category", GoodsCategories)
-    implicit val cgoods_category = createEnumColumnExtensionMethodsBuilder(GoodsCategories)
-    implicit val ogoods_category = createEnumOptionColumnExtensionMethodsBuilder(GoodsCategories)
+//    implicit val tgoods_category = createEnumJdbcType("goods_category", GoodsCategories)
+//    implicit val lgoods_category = createEnumListJdbcType("goods_category", GoodsCategories)
+//    implicit val cgoods_category = createEnumColumnExtensionMethodsBuilder(GoodsCategories)
+//    implicit val ogoods_category = createEnumOptionColumnExtensionMethodsBuilder(GoodsCategories)
 
   }
 

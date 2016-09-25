@@ -1,38 +1,31 @@
-@(loginForm: Form[FormDataLogin])(implicit webJarAssets: WebJarAssets)
+@(loginForm: Form[FormDataLogin])(implicit webJarAssets: WebJarAssets, dao: DAO)
 @_template(None) {
-    <form method="post" action="@routes.Authentication.login()">
+    <form method="post" action="@routes.Authentication.login()" class="form-horizontal" role="form">
+    <div class="container">
         <div class="row">
-            <div class="medium-8 medium-centered columns">
-                <label>User
-                    <input type="email" placeholder="write@@your.email" name="email" value="admin@@tetrao.eu" required/>
-                    <!--<input type="email" placeholder="write@@your.email" name="email" value="@loginForm("email").value" required/>-->
-                    @loginForm.error("email").map { formError =>
-                        <span class="form-error is-visible">@formError.message</span>
-                    }
+                <label class="col-md-1">User
                 </label>
-            </div>
+                <input type="email" placeholder="write@@your.email" name="email" class="col-md-5" value="admin@@tetrao.eu" required/>
+                @loginForm.error("email").map { formError =>
+                    <span class="form-error is-visible">@formError.message</span>
+                }
         </div>
         <div class="row">
-            <div class="medium-8 medium-centered columns">
-                <label>Password
-                    <input type="password" placeholder="password" name="password" required value="password"/>
-                    @loginForm.error("password").map { formError =>
-                        <span class="form-error is-visible">@formError.message</span>
-                    }
+                <label class="col-md-1">Password
                 </label>
-
-            </div>
+                <input type="password" placeholder="password" name="password" class="col-md-5" required value="password"/>
+                @loginForm.error("password").map { formError =>
+                    <span class="form-error is-visible">@formError.message</span>
+                }
         </div>
         <div class="row">
-            <div class="large-4 medium-7 small-12 large-centered medium-centered columns">
                 <div class="row">
-                    <div class="small-6 columns">
-                        <button type="submit" class="button expanded success">Login</button>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-success">Login</button>
                     </div>
-                    <div class="small-6 columns">
-                        <a href="@routes.PublicApplication.index()" class="button expanded secondary">Cancel</a>
+                    <div class="col-md-1">
+                        <a href="@routes.PublicApplication.index()" class="btn btn-warning">Cancel</a>
                     </div>
-                </div>
             </div>
         </div>
         <div class="row column">
@@ -43,6 +36,7 @@
                     <li>Normal user <code>bob@@tetrao.eu</code> with password <code>password</code></li>
                 </ul>
             </blockquote>
+        </div>
         </div>
     </form>
 }

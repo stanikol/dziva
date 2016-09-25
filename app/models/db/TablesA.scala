@@ -49,7 +49,7 @@
 //    /** Database column password SqlType(text) */
 //    val password: Rep[String] = column[String]("password")
 //    /** Database column role SqlType(account_role) */
-//    val role: Rep[models.db.AccountRole.Value] = column[models.db.AccountRole.Value]("role")
+//    val role: Rep[models.database.AccountRole.Value] = column[models.database.AccountRole.Value]("role")
 //    /** Database column created_at SqlType(timestamptz) */
 //    val createdAt: Rep[java.time.OffsetDateTime] = column[java.time.OffsetDateTime]("created_at")
 //    /** Database column updated_at SqlType(timestamptz) */

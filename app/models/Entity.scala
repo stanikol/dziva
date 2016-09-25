@@ -2,7 +2,7 @@ package models
 
 import java.time.OffsetDateTime
 
-import models.db.{AccountRole, Tables, GoodsCategories}
+import models.db.{AccountRole, Tables}
 
 import scala.collection.immutable.ListMap
 

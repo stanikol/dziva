@@ -5,7 +5,7 @@ import javax.inject.{Inject, Singleton}
 import com.github.t3hnar.bcrypt.Password
 import jp.t2v.lab.play2.auth._
 import models.db.{AccountRole, Tables}
-import models.{Account, Entity, FormData}
+import models._
 import play.api.Logger
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, Controller, RequestHeader, Result}
@@ -112,7 +112,7 @@ private[controllers] trait AuthConfigTrait extends AuthConfig {
 }
 
 @Singleton
-class Authentication @Inject()(val database: DBService, implicit val webJarAssets: WebJarAssets) extends Controller with AuthConfigTrait with OptionalAuthElement with LoginLogout {
+class Authentication @Inject()(val database: DBService, implicit val webJarAssets: WebJarAssets, implicit val dao: DAO) extends Controller with AuthConfigTrait with OptionalAuthElement with LoginLogout  {
 
   def prepareLogin() = StackAction { implicit request =>
     if (loggedIn.isDefined) {

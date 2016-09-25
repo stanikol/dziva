@@ -1,4 +1,4 @@
-@(account: Entity[Account], goodsRowForm: Form[models.db.Tables.GoodsRow], base64img: Option[String]=None)(implicit webJarAssets: WebJarAssets)
+@(account: Entity[Account], goodsRowForm: Form[models.db.Tables.GoodsRow], base64img: Option[String]=None)(implicit webJarAssets: WebJarAssets, dao: DAO)
 
 @*
  **************
@@ -6,82 +6,52 @@
  **************
  *@
 @itemId     = @{goodsRowForm("id").value.getOrElse("0").toInt}
-@item4sale  = @{ goodsRowForm(_: String).value.getOrElse("") }
+@formFieldsValues  = @{ goodsRowForm(_: String).value.getOrElse("") }
 
 @_template(Some(account))  {
-    @goodsRowForm.hasErrors - @itemId
-    <form action = '@routes.RestrictedApplication.edititem(itemId)' method="post">
-        <fieldset>
-            <input id="id"  type="hidden" name="id" value="@itemId" />
-
-            @for( (col, coltitle) <- models.GoodsItem.header ){
-                <div class="row collapse">
-                @goodsRowForm(col).errors.foreach { error =>
-                        <span>@error.message</span>
-                    }
-                @if(col == "category"){
-                    <div class="large-1 columns">
-                        <label for="@col" class="right">
-                            <span class="label">@coltitle</span>
-                        </label>
-                    </div>
-                    <div class="large-10 columns">
-                        <select id="@col" name="category">
-                            @for(cat <- models.db.GoodsCategories.values){
-                                @if(item4sale("category")==cat.toString){
+    <div class="container-fluid">
+        <form action = '@routes.RestrictedApplication.edititem(itemId)' method="post">
+            <fieldset>
+                <input id="id"  type="hidden" name="id" value="@itemId" />
+                @for( (col, coltitle) <- models.GoodsItem.header ){
+                    <div class="form-group row">
+                    @if(col == "category"){
+                        <label for="@col" class="col-md-2">@coltitle</label>
+                        <select id="@col" name="category" class="col-md-8">
+                            @for(cat <- dao.categories){
+                                @if(formFieldsValues("category")==cat.toString){
                                     <option value="@cat" selected>@cat</option>
                                 } else {
                                     <option value="@cat" >@cat</option>
                                 }
                             }
                         </select>
-                    </div>
-                } else { @if(col == "pic") {
-                    <div class="large-1 columns">
-                        <label for="@col" class="right">
-                            <span class="label">@coltitle  </span>
-                        </label>
-                    </div>
-                    <div class="large-10 columns">
-                        <div class="column large-3">
-                            <a href="@routes.RestrictedApplication.edititemphoto(itemId)">
-                                <img src="@base64img.getOrElse("No photo")">
+                    } else { @if(col == "pic") {
+                            <label for="@col" class="col-md-2">@coltitle</label>
+                            <div class="col-md-4">
+                            <a href="@routes.RestrictedApplication.edititemphoto(itemId)" >
+                                <img src="@base64img.getOrElse("No photo")" class="col-md-8">
                             </a>
-                            <input type="hidden" name="pic" value="@item4sale(col)"/>
-                        </div>
+                                </div>
+                            <input type="hidden" name="pic" value="@formFieldsValues(col)"/>
+                    } else { @if(col == "description") {
+                        <label for="@col" class="col-md-2">@coltitle</label>
+                        <textarea id="@col" name="@col" rows="3" class="col-md-10">@formFieldsValues(col)</textarea>
+                    } else {
+                            <label for="@col" class="col-md-2">@coltitle</label>
+                            <input id="@col"  type="text" name="@col" value="@formFieldsValues(col)" class="col-md-10"/>
+                    }}}
                     </div>
-                } else { @if(col == "description") {
-                    <div class="large-1 columns">
-                        <label for="@col" class="right">
-                            <span class="label">@coltitle</span>
-                        </label>
+                }
+                <div class="row">
+                    <div class="col-md-12">
+                        <input name='action' type="submit" value="Сохранить" class="btn btn-primary"/>
+                        <input name='action' type="submit" value="Удалить" class="btn btn-danger"/>
+                        <a href="@routes.RestrictedApplication.newitem()" class="btn btn-warning">Новый</a>
+                        <a href="@routes.PublicApplication.goods()" class="btn btn-default pull-right">Перечень товаров</a>
                     </div>
-                    <div class="large-10 columns">
-                        <textarea id="@col" name="@col" rows="3">@item4sale(col)
-                        </textarea>
-                    </div>
-                } else {
-                        <div class="large-1 columns">
-                            <label for="@col" class="right">
-                            <span class="label">@coltitle</span>
-                            </label>
-                        </div>
-                        <div class="large-10 columns">
-                            <input id="@col"  type="text" name="@col" value="@item4sale(col)" />
-                        </div>
-                }}}
-
                 </div>
-            }
-            <div class="row collapse">
-                <div class="column large-3">
-                    <input name='action' type="submit" value="Сохранить"/>
-                    <input name='action' type="submit" value="Удалить" />
-                    <input name='action' type="submit" value="Новый"/>
-
-                </div>
-                <div></div>
-            </div>
-        </fieldset>
-    </form>
+            </fieldset>
+        </form>
+    </div>
 }

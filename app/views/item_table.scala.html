@@ -1,23 +1,23 @@
 @(goodsviewRow: models.db.Tables.GoodsviewRow)
 @import helpers.Hlp._
 @goodsRowAsMap = @{goodsviewRow.asMap}
-<table name="item-table" id="item-table" class="table table-striped table-bordered table-condensed table-hover">
-    <h3> @goodsviewRow.description  </h3>
-    <tbody>
-        <tr>
-            <td><div class="row">
-                <img src="@goodsviewRow.base64" class="column large-5">
-            </div></td>
-        </tr>
-        @GoodsItem.header.map { case (sqlName, ruName) =>
-            <tr>
-                <td>
-                    @ruName
-                </td>
-                <td>
-                    @goodsRowAsMap(sqlName)
-                </td>
+<div class="container">
+    <table name="item-table" id="item-table" class="table table-striped table-bordered table-condensed table-hover">
+        <h3> @goodsviewRow.description  </h3>
+        <tbody>
+            <tr class="row">
+                    <img src="@goodsviewRow.base64" class="col-md-2">
             </tr>
-        }
-    </tbody>
-</table>
+            @GoodsItem.header.map { case (sqlName, ruName) =>
+                <tr>
+                    <td>
+                        @ruName
+                    </td>
+                    <td>
+                        @goodsRowAsMap(sqlName)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

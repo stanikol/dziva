@@ -8,7 +8,7 @@ import play.api.mvc.{AnyContent, Request}
   */
 object Utils {
 
-  def getParams(name: String)(implicit request: Request[AnyContent]): Option[String] = {
+  def getParamFromRequest(name: String)(implicit request: Request[AnyContent]): Option[String] = {
     if(request.body.asFormUrlEncoded.isDefined)
       request.body.asFormUrlEncoded.get.getOrElse(name, Seq.empty[String]).headOption
     else if(request.body.asMultipartFormData.isDefined)

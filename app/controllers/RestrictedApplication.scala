@@ -19,14 +19,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import helpers.Hlp._
 import models.PageOfPics
-import play.api.data.Form
+import play.api.cache.CacheApi
 import sun.misc.BASE64Encoder
 import views.html
-
+import play.api.data.Forms._
+import play.api.data.Form
 import scala.util.Success
 
 @Singleton
-class RestrictedApplication @Inject()(val database: DBService, implicit val webJarAssets: WebJarAssets)
+class RestrictedApplication @Inject()(val database: DBService, val cache: CacheApi, implicit val webJarAssets: WebJarAssets, implicit val dao: DAO)
   extends Controller with AuthConfigTrait with AuthElement {
   import play.api.i18n.Messages.Implicits._
 
@@ -124,19 +125,27 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
   }
 
 
+  def newitem = AsyncStack(AuthorityKey -> AccountRole.admin) { implicit request =>
+      val newItem = GoodsRow(-1, 0, 0, "Компрессора", "", "", None, None, None, None, None, None, None)
+      database.runAsync((Tables.Goods returning Tables.Goods.map(_.id)) +=  newItem).map{ id =>
+        Redirect(routes.RestrictedApplication.edititem(id))
+      }
+  }
+
+
   def edititem(itemId: Int) = AsyncStack(AuthorityKey -> AccountRole.admin) { implicit request =>
-    val actionParam: Option[String]= // only for POST request. None for oter types.
-      if(request.body.asFormUrlEncoded.isDefined)
-        request.body.asFormUrlEncoded.get.getOrElse("action", Seq.empty[String]).headOption
-      else
-        request.getQueryString("action")
-    Logger.debug(s"RestrictedApplication.editform($itemId): action == ${actionParam}")
-    val supportedActions = Seq("Сохранить", "Удалить", "Новый")
-    actionParam match {
+
+    val action: Option[String] = play.api.data.Form(single("action"->optional(text))).bindFromRequest.fold(error => None, act => act)
+
+    Logger.info(s"RestrictedApplication.editform($itemId): action == ${action}")
+    val supportedActions = Seq("Сохранить", "Удалить")
+    action match {
       case Some(action) if supportedActions.contains(action) =>
         action match {
               case "Удалить" =>
-                database.runAsync(Tables.Goods.filter(_.id === itemId).delete).map(id => Redirect(routes.PublicApplication.goods()))
+                database.runAsync(Tables.Goods.filter(_.id === itemId).delete).map(id =>
+                  Redirect(routes.PublicApplication.goods())
+                )
               case "Сохранить" =>
                 Logger.error(s"Сохранить $itemId")
                 FormData.editGoodsItemForm.bindFromRequest().fold(
@@ -152,15 +161,11 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
                     )
                   }
                 )
-              case "Новый" =>
-                val newItem = GoodsRow(-1, 0, 0, "Компрессора", "", "", None, None, None, None, None, None, Some(1))
-                database.runAsync((Tables.Goods returning Tables.Goods.map(_.id)) +=  newItem).map{ id =>
-                  Redirect(routes.RestrictedApplication.edititem(id))
-                }
+
         }
-      case Some(action) =>
-        Logger.error(s"RestrictedApplication.editform($itemId): Неизвестный action == $action")
-        Future.successful(Ok(s"Неизвестный action == $action"))
+      case Some(unknown_action) =>
+        Logger.error(s"RestrictedApplication.editform($itemId): Неизвестный action == $unknown_action")
+        Future.successful(Ok(s"Неизвестный action == $unknown_action"))
       case None =>
         Logger.info(s"edititem: no action specified")
         database.runAsync(Tables.Goodsview.filter(_.id === itemId).result.head).map{ goodsviewRow =>
@@ -176,20 +181,17 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
     * @param id
     * @param searchPhotoStr
     * @param currentPage
-    * @param totalPages
     * @return
     */
   def edititemphoto(id:         Int,
                     searchPhotoStr: Option[String] = None,
-                    currentPage:    Option[Int] = None,
-                    totalPages:     Option[Int] = None) = AsyncStack(AuthorityKey -> AccountRole.admin) { implicit request =>
+                    currentPage:    Option[Int] = None) = AsyncStack(AuthorityKey -> AccountRole.admin) { implicit request =>
 
     val getCurrentItem = Tables.Goodsview.filter(_.id === id).result.headOption
     val getSmallPics = Tables.SmallPics.filter(_.name.toLowerCase.like(s"%${searchPhotoStr.getOrElse("").toLowerCase}%"))
 
     case class EditItemPhoto(id: Int, action_search: Option[String], action_select: Option[String], q: Option[String], picid: Option[Int])
-    import play.api.data.Forms._
-    import play.api.data.Form
+
     val editItemPhotoForm = Form(mapping(
       "id"              ->  number,
       "action_search"   ->  optional(text),
@@ -201,11 +203,12 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
     editItemPhotoForm.bindFromRequest().fold(
       { error => Future.successful(BadRequest(s"Ошибка данных формы. ${error.errors.map(_.message)}")) },
       { editItemPhoto =>
-          val goodsviewRows: Future[Tables.GoodsviewRow] = database.runAsync(Tables.Goodsview.filter(_.id === id).result.head)
-          val pics: Future[Seq[Tables.SmallPicsRow]] = database.runAsync(
-              Tables.SmallPics.filter(_.name.toLowerCase.like(s"%${editItemPhoto.q.getOrElse("")}%")).result
+          val goodsviewRowF: Future[Tables.GoodsviewRow] =
+            database.runAsync(Tables.Goodsview.filter(_.id === id).result.head)
+          val picsF: Future[Seq[Tables.SmallPicsRow]] = database.runAsync(
+              Tables.SmallPics.filter(_.name.toLowerCase.like(s"%${searchPhotoStr.getOrElse("")}%")).result
           )
-          def okDefaultAction = (for( g <- goodsviewRows; p <- pics)
+          def okDefaultAction = (for( g <- goodsviewRowF; p <- picsF)
             yield  Ok(views.html.edititemphoto(loggedIn, g, Some(PageOfPics(p, 1 , 2))))
             ).recover{ case exception => BadRequest(s"Ошибка ${exception.getMessage}") }
           editItemPhoto match {
@@ -223,7 +226,7 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
                   val base64: String = new BASE64Encoder().encode(byte)
                   Logger.info(s"Длина нового файла в base64 = ${base64.length}")
                   val pic = SmallPicsRow(-1, filename, s"data:$contetType;charset=utf-8;base64," + base64)
-                  database.runAsync(Tables.SmallPics.returning(Tables.SmallPics.map(_.id)) += pic).flatMap { newPicID =>
+                  database.runAsync((Tables.SmallPics.returning(Tables.SmallPics.map(_.id))) += pic).flatMap { newPicID =>
                     database.runAsync {
                       val qry = for (g <- Tables.Goods if g.id === id) yield (g.pic)
                       qry.update((Some(newPicID)))
@@ -236,7 +239,7 @@ class RestrictedApplication @Inject()(val database: DBService, implicit val webJ
             case EditItemPhoto(id, None, Some(action_select), q, Some(pic) )  =>
               Logger.info("Выбрать существующую картинку")
               val updatePicQry = for(i <- Tables.Goods if i.id === id) yield i.pic
-              database.runAsync(updatePicQry.update(Some(pic))).map (_ => Redirect(routes.RestrictedApplication.edititem(id)))
+              database.runAsync(updatePicQry.update(Some(pic))).map (_ => Redirect(routes.RestrictedApplication.edititemphoto(id)))
             case _ =>
               Logger.info("По-умолчанию")
               okDefaultAction

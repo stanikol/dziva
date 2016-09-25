@@ -19,9 +19,10 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /webjars/*file              controllers.WebJarAssets.at(file)
 
 
-GET     /goods                      controllers.PublicApplication.goods(q: String ?= "", cat: String ?= "")
 GET     /showitem                   controllers.PublicApplication.showitem(id: Int)
+GET     /goodslist                  controllers.PublicApplication.goods(q: String ?= "", c: String ?= "", p: Int ?= 0)
+GET     /newitem                    controllers.RestrictedApplication.newitem
 GET     /edititem                   controllers.RestrictedApplication.edititem(id: Int)
 POST    /edititem                   controllers.RestrictedApplication.edititem(id: Int)
-GET    /edititemphoto               controllers.RestrictedApplication.edititemphoto(id: Int, q: Option[String] ?= None, p: Option[Int] = None, total: Option[Int] = None)
-POST    /edititemphoto              controllers.RestrictedApplication.edititemphoto(id: Int, q: Option[String] ?= None, p: Option[Int] = None, total: Option[Int] = None)
+GET     /edititemphoto              controllers.RestrictedApplication.edititemphoto(id: Int, q: Option[String] ?= None, p: Option[Int] = None)
+POST    /edititemphoto              controllers.RestrictedApplication.edititemphoto(id: Int, q: Option[String] ?= None, p: Option[Int] = None)

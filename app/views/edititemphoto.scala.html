@@ -1,35 +1,37 @@
-@(account: Entity[Account], goodsviewRow: models.db.Tables.GoodsviewRow, picsOpt: Option[models.PageOfPics])(implicit webJarAssets: WebJarAssets, request: Request[AnyContent])
+@(account: Entity[Account], goodsviewRow: models.db.Tables.GoodsviewRow, picsOpt: Option[models.PageOfPics])(implicit webJarAssets: WebJarAssets, request: Request[AnyContent], dao: DAO)
 
 @*
  **************
  *@
-@import views.Utils.getParams
+@import views.Utils.getParamFromRequest
 @_template(Some(account))  {
+    <div class="container-fluid">
     @item_table(goodsviewRow)
     @if(picsOpt.nonEmpty){
-        <form action="@routes.RestrictedApplication.edititemphoto(id = goodsviewRow.id.get)" enctype="multipart/form-data" method="post">
+        <form action="@routes.RestrictedApplication.edititemphoto(id = goodsviewRow.id.get)" enctype="multipart/form-data" method="post" role="form">
             <div class="row">
-                <div class="column large-4">
-                    <input type="text" placeholder="Текст для поиска картинок" name="q" value="@getParams("q")"/>
-                </div>
-                <div class="column large-1">
-                    <input type="submit" value="Искать" name="action_search"/>
-                </div>
-                <div></div>
+                <input type="text"  class="col-md-5"
+                       placeholder="Текст для поиска картинок" name="q" value="@getParamFromRequest("q")"/>
+                <input type="submit" class="col-md-1"
+                       value="Искать" name="action_search"/>
             </div>
-            <input type="submit" value="Выбрать / Сохранить загруженный" name="action_select"/>
-            <input name="newfile" type="file"/>
-            <input type="hidden" value="@goodsviewRow.id" name="id">
+
+            <div class="row">
+                <a href="@routes.RestrictedApplication.edititem(goodsviewRow.id.get)" class="btn btn-info">ОК</a>
+                <input type="submit" value="Выбрать" name="action_select" class="btn btn-warning"/>
+                <input name="newfile" type="file" class="btn btn-error"/>
+                <input type="hidden" value="@goodsviewRow.id" name="id">
+            </div>
             <div class="row">
                 @for(pic <- picsOpt.get.pics){
-                        <div class="column small-2">
-                            <input type="radio" value="@pic.id" name="picid">@pic.name
-                            <img src="@pic.base64">
-                            </input>
+                        <div class="col-md-2">
+                            <input type="radio" value="@pic.id" name="picid"> @pic.name</input>
+                            <img src="@pic.base64"  class="col-md-12">
                         </div>
                 }
                 <div></div>
             </div>
         </form>
     }
+    </div>
 }

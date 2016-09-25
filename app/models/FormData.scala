@@ -2,7 +2,6 @@ package models
 
 import java.text.SimpleDateFormat
 
-import models.db.GoodsCategories
 import play.api.data.{Form, FormError, Mapping}
 import play.api.data.Forms._
 import play.api.data.format.Formats._
@@ -41,16 +40,16 @@ object FormData {
 
   val addAccount = accountForm(nonEmptyText)
 
-  implicit def goodsCategoriesFormatter: Formatter[db.GoodsCategories.Value] = new Formatter[db.GoodsCategories.Value] {
-    def bind(key: String, data: Map[String, String]) = {
-      try {
-        Right( db.GoodsCategories.withName(key) )
-      } catch {
-        case e: Exception => Left(List(FormError(key, "Your error message")))
-      }
-    }
-    def unbind(key: String, value: db.GoodsCategories.Value) = Map(key -> value.toString)
-  }
+//  implicit def goodsCategoriesFormatter: Formatter[database.GoodsCategories.Value] = new Formatter[database.GoodsCategories.Value] {
+//    def bind(key: String, data: Map[String, String]) = {
+//      try {
+//        Right( database.GoodsCategories.withName(key) )
+//      } catch {
+//        case e: Exception => Left(List(FormError(key, "Your error message")))
+//      }
+//    }
+//    def unbind(key: String, value: database.GoodsCategories.Value) = Map(key -> value.toString)
+//  }
 
 // id: Int, price: scala.math.BigDecimal, qnt: Int, category: String, title: String,
 //  description: String, producedby: Option[String] = None, trademark: Option[String] = None, cars: Option[String] = None,
@@ -72,16 +71,30 @@ object FormData {
     )(db.Tables.GoodsRow.apply)(db.Tables.GoodsRow.unapply)
   )
 
+//
+//  case class GoodsSearchFormData(q: Option[String], cat: Option[String])
+//
+//  val searchGoodsForm = Form(
+//    mapping("q" -> optional(text), "c" -> optional(text))
+//      (GoodsSearchFormData.apply)(GoodsSearchFormData.unapply)
+//  )
 
-  case class GoodsSearchFormData(q: String = "", cat: String = "")
+  case class GoodsSearchFormData(q: String, cat: String)
 
   val searchGoodsForm = Form(
-    mapping("q" -> text, "cat" -> text)
-      (GoodsSearchFormData.apply)(GoodsSearchFormData.unapply)
+    mapping("q" -> text, "c" -> text)
+    (GoodsSearchFormData.apply)(GoodsSearchFormData.unapply)
   )
+
+
 
 
 
 
 }
 case class PageOfPics(pics: Seq[db.Tables.SmallPicsRow], page: Int, total: Int)
+
+case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
+  lazy val prev = Option(page - 1).filter(_ >= 0)
+  lazy val next = Option(page + 1).filter(_ => (offset + items.size) < total)
+}

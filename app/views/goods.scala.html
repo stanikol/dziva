@@ -1,115 +1,110 @@
-@(account: Option[Entity[Account]], goodsWithPicSeq: Seq[models.db.Tables.GoodsviewRow], searchForm : Form[FormData.GoodsSearchFormData])(implicit webJarAssets: WebJarAssets)
+@(account: Option[Entity[Account]], currentPage: models.Page[models.db.Tables.GoodsviewRow], searchForm : Form[models.FormData.GoodsSearchFormData])(implicit webJarAssets: WebJarAssets, dao: DAO)
 
 
-@formSubmitBackRoute = @{ if(account.isDefined && account.get.data.isAdmin) routes.RestrictedApplication.edititem(_)
-                          else routes.PublicApplication.showitem(_) }
+@formSubmitBackRoute = @{ if(account.isDefined && account.get.data.isAdmin) routes.RestrictedApplication.edititem(_: Int)
+                          else routes.PublicApplication.showitem(_: Int) }
 @import helpers.Hlp._
 
+
+@****************************************
+* Helper generating navigation links    *
+****************************************@
+@link(newPage: Int, newOrderBy: Option[Int] = None) = @{
+    routes.PublicApplication.goods(p = newPage)
+}
+
 @_template(account) {
-    <div class="row ">
-        <form action="@routes.PublicApplication.goods()">
-            <legend>Поиск</legend>
-            <fieldset>
-                <div class="row">
-                    <div class="column large-4">
-                        <input placeholder="Запрос" name="q" type="text" value="@searchForm("q").value" />
-                    </div>
-                    <div class="column large-1 right">
-                        <input type="submit" value="Искать" class="button"/>
-                    </div>
-                    <div class="column large-2 right">
-                        <select name="cat">
-                            <option value="">Все</option>
-                            @for(cat <- models.db.GoodsCategories.values){
-                                <option value="@cat" @{ if(cat.toString == searchForm("cat").value.getOrElse("")) "selected" else "" }>@cat</option>
+    <div class="container">
+        <div class="row ">
+            <form action="@routes.PublicApplication.goods()">
+                <fieldset>
+                    <input  placeholder="Запрос" name="q" type="text" value="@searchForm("q").value" width="100%"></input>
+                    <input  type="submit" value="Искать" class="button"/>
+                    <select  name="c">
+                        <option value="">Все</option>
+                        @for(cat <- dao.categories){
+                            @if(cat == searchForm("c").value.getOrElse("")){
+                                <option value="@cat" selected>@cat</option>
+                            } else {
+                                <option value="@cat">@cat</option>
                             }
-                        </select>
-                    </div>
-                    <div>
+                        }
+                    </select>
+                    <!--ADMIN PART Новый товар BUTTON -->
                     @account.map { user =>
                         @if(user.data.isAdmin){
-                            <a href="@routes.RestrictedApplication.edititem(1)&action=Новый" class="button">Новый товар</a>
+                            <div><a class="pull-right btn btn-warning" href="@routes.RestrictedApplication.newitem()">Новый товар</a></div>
+                        }
+                    }
+                </fieldset>
+            </form>
+        </div>
+        <!--TABLE WITH GOODS: HEADER-->
+        <div class="row">
+            <div class="row hidden-xs hidden-sm text-muted">
+                <div class="photo col-sm-3 col-md-3 col-lg-4"><h2>Фото</h2></div>
+                <div class="descr col-sm-6 col-md-6 col-lg-6"><h2>Описание</h2></div>
+                <div class="price col-sm-3 col-md-3 col-lg-2"><h2>Цена</h2></div>
+            </div>
+        </div>
+        <!--TABLE WITH GOODS: BODY-->
+        @for( goodsItemWithPic <- currentPage.items ){
+            <div class="row">
+                <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
+                    <div class="col-sm-3 col-md-3 col-lg-4">
+                        @if(goodsItemWithPic.base64.isEmpty){
+                        NO PHOTO
+                        } else {
+                        <img src="@goodsItemWithPic.base64" class="img-responsive" />
                         }
                     </div>
-                    }
-                </div>
-            </fieldset>
-        </form>
-    </div>
-
-
-
-    <div class="row">
-        <div class="column large-8">
-
-        <table class="stack hover table-scroll column" >
-            <thead>
-                <tr>
-                    <th width="20%"> Фото </th>
-                    <th> Описание </th>
-                    <th> Цена </th>
-                </tr>
-            </thead>
-            <tbody>
-            @for( goodsItemWithPic <- goodsWithPicSeq ){
-                <tr>
-                    <td class="css-pic ">
-                        <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
-                            @if(goodsItemWithPic.base64.isEmpty){
-                                    NO PHOTO
-                            } else {
-                                <img src="@goodsItemWithPic.base64"/>
-                            }
-                        </a>
-                    </td>
-                    <td class="css-descript  ">
-                        <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
-                            @goodsItemWithPic.description.getOrElse("").split("\n").map { line =>
-                                @line <br>
-                            }
-                        </a>
-                    </td>
-                    <td class="css-descript  ">
-                        <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
-                            @goodsItemWithPic.price
-                        </a>
-                    </td>
-                    </a>
-                </tr>
-            }
-            </tbody>
-        </table>
+                    <div class="col-sm-6 col-md-6 col-lg-6">
+                        <h3>@goodsItemWithPic.title.getOrElse("")</h3>
+                        <h6>@goodsItemWithPic.description.getOrElse("")</h6>
+                        <div><span class="text-muted">Категория:</span>
+                             <span class="text-primary">@goodsItemWithPic.category.getOrElse("")</span>
+                        </div>
+                        <div><span class="text-muted">Производитель:</span>
+                            <span class="text-primary">@goodsItemWithPic.producedby.getOrElse("")</span>
+                        </div>
+                        <div><span class="text-muted">Торговая марка:</span>
+                            <span class="text-primary">@goodsItemWithPic.trademark.getOrElse("")</span>
+                        </div>
+                        <div><span class="text-muted">Состояние:</span>
+                            <span class="text-primary">@goodsItemWithPic.state.getOrElse("")</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-md-3 col-lg-2">
+                        <h4>@goodsItemWithPic.price.getOrElse("")</h4>
+                    </div>
+                </a>
+            </div>
+        }
+        <!--PAGINATION-->
+        <div id="pagination" >
+            <ul class="list-inline">
+                @currentPage.prev.map { page =>
+                    <li class="prev">
+                        <a href="@link(page)">&larr; Предыдущая </a>
+                    </li>
+                }.getOrElse {
+                    <li class="prev disabled">
+                        &larr; Предыдущая
+                    </li>
+                }
+                <li class="current">
+                    <a>Позиции с @(currentPage.offset + 1) по @(currentPage.offset + currentPage.items.size). Всего @currentPage.total.</a>
+                </li>
+                @currentPage.next.map { page =>
+                    <li class="next">
+                        <a href="@link(page)">Следующая &rarr;</a>
+                    </li>
+                }.getOrElse {
+                    <li class="next disabled">
+                        Следующая &rarr;
+                    </li>
+                }
+            </ul>
         </div>
     </div>
-   @*****************************************
-    <div class="row">
-        <table class="stack">
-            <thead>
-                <tr>
-                    <th></th>
-                    @for( (col, colTitle) <- GoodsItem.header ){
-                        <th>@colTitle</th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-            @for( goodsItemWithPic <- goodsWithPicSeq ){
-                <tr>
-                    <td class="css-pic">
-                        <img src="@goodsItemWithPic.base64">
-                        </img>
-                    </td>
-                    @for( (col, colTitle) <- GoodsItem.header ){
-                        <td class="css-@col">
-                            <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
-                                @goodsItemWithPic.asMap(col)
-                            </a>
-                        </td>
-                    }
-                </tr>
-            }
-
-        </table>
-    </div>
-    *******************************************@
 }

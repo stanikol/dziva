@@ -1,6 +1,6 @@
-@(account: Option[Entity[Account]])(implicit webJarAssets: WebJarAssets)
+@(account: Option[Entity[Account]])(implicit webJarAssets: WebJarAssets, dao: DAO)
 @_template(account) {
-    <div class="row column">
+<div class="container-fluid">
         <h1>Авто кондиционеры Рем.Быт.Техника </h1>
         <ul>
             <li>
@@ -10,16 +10,16 @@
                 Качесто, поверреное временем.
             </li>
         </ul>
-    </div>
+
     <div class="row">
-        <div class="medium-6 columns">
-                <img class="thumbnail" src="@routes.Assets.at("img/cat-1417278_1280.jpg")" alt="a cat" />
-        </div>
-        <div class="medium-6 columns">
+
+        <img src="@routes.Assets.at("img/cat-1417278_1280.jpg")" alt="a cat" class="col-md-3"/>
+        <div class="col-md-6">
             <p>
                 Это сайт находится в состоянии разработки.
             </p>
 
         </div>
     </div>
+</div>
 }
