@@ -82,14 +82,14 @@
         }
         <!--PAGINATION-->
         <div id="pagination" >
-            <ul class="list-inline">
+            <ul class="pagination">
                 @currentPage.prev.map { page =>
                     <li class="prev">
                         <a href="@link(page)">&larr; Предыдущая </a>
                     </li>
                 }.getOrElse {
                     <li class="prev disabled">
-                        &larr; Предыдущая
+                        <a>&larr; Предыдущая </a>
                     </li>
                 }
                 <li class="current">
@@ -101,7 +101,7 @@
                     </li>
                 }.getOrElse {
                     <li class="next disabled">
-                        Следующая &rarr;
+                        <a> Следующая &rarr; </a>
                     </li>
                 }
             </ul>
