@@ -14,9 +14,9 @@
 }
 
 @_template(account) {
-    <div class="container">
-        <div class="row ">
-            <form action="@routes.PublicApplication.goods()">
+    <div class="container-fluid">
+        <div class="row">
+            <form action="@routes.PublicApplication.goods()" class="col-sm-9">
                 <fieldset>
                     <input  placeholder="Запрос" name="q" type="text" value="@searchForm("q").value" width="100%"></input>
                     <input  type="submit" value="Искать" class="button"/>
@@ -31,34 +31,36 @@
                         }
                     </select>
                     <!--ADMIN PART Новый товар BUTTON -->
-                    @account.map { user =>
-                        @if(user.data.isAdmin){
-                            <div><a class="pull-right btn btn-warning" href="@routes.RestrictedApplication.newitem()">Новый товар</a></div>
-                        }
-                    }
                 </fieldset>
             </form>
+            <div c lass="col-sm-1">
+                @account.map { user =>
+                    @if(user.data.isAdmin){
+                            <a class="btn btn-danger" href="@routes.RestrictedApplication.newitem()">Новый товар</a>
+                    }
+                }
+            </div>
         </div>
         <!--TABLE WITH GOODS: HEADER-->
         <div class="row">
             <div class="row hidden-xs hidden-sm text-muted">
-                <div class="photo col-sm-3 col-md-3 col-lg-4"><h2>Фото</h2></div>
-                <div class="descr col-sm-6 col-md-6 col-lg-6"><h2>Описание</h2></div>
-                <div class="price col-sm-3 col-md-3 col-lg-2"><h2>Цена</h2></div>
+                <div class="photo col-sm-3 col-md-3 col-xs-3"><h2>Фото</h2></div>
+                <div class="descr col-sm-6 col-md-6 col-xs-6"><h2>Описание</h2></div>
+                <div class="price col-sm-3 col-md-3 col-xs-1"><h2>Цена</h2></div>
             </div>
         </div>
         <!--TABLE WITH GOODS: BODY-->
         @for( goodsItemWithPic <- currentPage.items ){
             <div class="row">
                 <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
-                    <div class="col-sm-3 col-md-3 col-lg-4">
+                    <div class="col-sm-3 col-md-3 col-xs-12">
                         @if(goodsItemWithPic.base64.isEmpty){
                         NO PHOTO
                         } else {
                         <img src="@goodsItemWithPic.base64" class="img-responsive" />
                         }
                     </div>
-                    <div class="col-sm-6 col-md-6 col-lg-6">
+                    <div class="col-sm-6 col-md-6 col-xs-12">
                         <h3>@goodsItemWithPic.title.getOrElse("")</h3>
                         <h6>@goodsItemWithPic.description.getOrElse("")</h6>
                         <div><span class="text-muted">Категория:</span>
@@ -76,6 +78,7 @@
                     </div>
                     <div class="col-sm-3 col-md-3 col-lg-2">
                         <h4>@goodsItemWithPic.price.getOrElse("")</h4>
+                        <button class="btn btn-warning">Купить</button>
                     </div>
                 </a>
             </div>

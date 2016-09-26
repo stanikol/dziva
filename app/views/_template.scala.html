@@ -16,30 +16,30 @@
 
     </head>
     <body>
-    <div class="container-fluid">
+    <div class="container">
 
     <nav class="navbar navbar-default">
         <div class="container-fluid-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="row">
-                <a href="/" class="col-md-8">
+                <a href="/" class="col-md-8 col-sm-8 col-xs-12">
                     <h3>Авто-климат центр "РЕМ.БЫТ.ТЕХНИКА"</h3>
                 </a>
-                <div class="col-md-4 pull-right">
-                    <span class="col-md-3"><i class="glyphicon glyphicon-earphone"></i>тел.:</span>
-                    <span class="col-md-9">+380 (50) 905 12 15,</span>
-                    <span class="col-md-9 col-md-offset-3">+380 (48) 268 81 90</span>
+                <div class="col-md-4 col-sm-4 col-xs-12 pull-right">
+                    <span class="col-md-3 col-xs-1"><i class="glyphicon glyphicon-earphone"></i>тел.:</span>
+                    <span class="col-md-9 col-xs-12">+380 (50) 905 12 15,</span>
+                    <span class="col-md-9 col-md-offset-3 col-xs-12">+380 (48) 268 81 90</span>
                 </div>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
+            <!--<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">-->
+                <ul class="nav navbar-nav hidden-xs">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <span class="glyphicon glyphicon-wrench gi-2x"></span>
                             <!--Услуги -->
-                            <span class="caret">
+                            <span class="caret"/>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="#">Ремонт</a></li>
@@ -55,7 +55,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <i class="glyphicon glyphicon-shopping-cart gi-2x"></i>
                             <!--Товары-->
-                            <span class="caret">
+                            <span class="caret"/>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="@routes.PublicApplication.goods()">Всё</a></li>
@@ -71,30 +71,43 @@
                 <ul class="nav navbar-nav navbar-right">
 
                         @if(account.isEmpty) {
-                        <li><a href="@routes.Authentication.login()" class="button success">Login</a></li>
+                            <li><a href="@routes.Authentication.login()" class="button success">Login</a></li>
                         } else {
-                        <li><a href="@routes.RestrictedApplication.account()" title="Edit Your Account">Hello <strong>@account.get.data.name</strong>!</a></li>
-                        <li><a href="@routes.RestrictedApplication.messages()" title="Manage messages">Messages</a></li>
-                        @if(account.get.data.isAdmin) {
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <i class="glyphicon glyphicon-cog"></i>
-                                    Настройки системы <span class="caret">
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">Перечень категорий</a></li>
-                                    <li><a href="#">Заправка</a></li>
-                                    <li><a href="#">Техническое обслуживание</a></li>
-                                    <li><a href="#">Ремонт компресоров</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="@routes.RestrictedApplication.newAccount()" title="Add an Account">Add Account</a></li>
+                            <li><a href="@routes.RestrictedApplication.account()" title="Edit Your Account">
+                                <span class="text-danger"> Режим администратора <strong>@account.get.data.name</strong>! </span></a></li>
+                            @if(account.get.data.isAdmin) {
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <i class="glyphicon glyphicon-cog"></i>
+                                        Настройки системы <span class="caret"/>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li class="dropdown-header text-danger">Редактирование БД</li>
+                                        <li><a href="#">Категории товаров</a></li>
+                                        <li><a href="#">Картинки</a></li>
+                                        <li><a href="#">Тел. и адресс</a></li>
+                                        <li class="divider"></li>
+                                        <li class="dropdown-header text-danger">Только если понимашь, что делашь !</li>
+                                        <li class="dropdown2">
+                                            <button href="#" class="dropdown-toggle" data-toggle="dropdown2" type="button" >
+                                                <i class="glyphicon glyphicon-cog"></i>
+                                                Настройки БД <span class="caret"/>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="@routes.RestrictedApplication.newAccount()" title="Add an Account">Add Account</a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="divider"></li>
+                                    </ul>
+                                </li>
+
+                                <!--<li><a href="@routes.RestrictedApplication.newAccount()" title="Add an Account">Add Account</a></li>-->
 
                         }
                         <li><a href="@routes.Authentication.logout()" class="button alert">Logout</a></li>
                         }
                 </ul>
-            </div><!-- /.navbar-collapse -->
+            <!--</div>&lt;!&ndash; /.navbar-collapse &ndash;&gt;-->
         </div><!-- /.container-fluid-fluid -->
 
 
@@ -104,7 +117,7 @@
 
     <div id="main-content" class="row">
             <!-- <CONTENT> -->
-        <div class="col-md-2">
+        <div class="col-md-2 col-xs-12 col-sm-2">
             <ul class="nav nav-pills nav-stacked">
                 <!--<li class="active"><a href="#">Home</a></li>-->
                 <li class="dropdown">
@@ -169,21 +182,11 @@
                             Диагностика</a></li>
                     </ul>
                 </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Menu 1
-                        <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Submenu 1-1</a></li>
-                        <li><a href="#">Submenu 1-2</a></li>
-                        <li><a href="#">Submenu 1-3</a></li>
-                    </ul>
-                </li>
-                <li><a href="#">Menu 2</a></li>
-                <li><a href="#">Menu 3</a></li>
+                <li><a href="#">Полезные ссылки</a></li>
             </ul>
         </div>
 
-        <div class="col-md-10">
+        <div class="col-md-10 col-xs-12 col-sm-10">
             @content
         </div>
         <!-- </CONTENT> -->
