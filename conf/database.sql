@@ -39,11 +39,6 @@ CREATE TABLE message (
 );
 
 
--- bcrypted password values are password in both users
-INSERT INTO account (name, email, role, password) values ('Admin User', 'admin@tetrao.eu', 'admin', '$2a$10$8K1p/a0dL1LXMIgoEDFrwOfMQbLgtnOoKsWc.6U6H0llP3puzeeEu');
-INSERT INTO account (name, email, role, password) values ('Bob Minion', 'bob@tetrao.eu', 'normal', '$2a$10$8K1p/a0dL1LXMIgoEDFrwOfMQbLgtnOoKsWc.6U6H0llP3puzeeEu');
-INSERT INTO message (content, tag_list) values ('Welcome to the templatesite!', '{"welcome", "first message", "english"}');
-
 -- SNC
 create table small_pics (
     id              serial primary key,
@@ -51,6 +46,50 @@ create table small_pics (
     base64          varchar not null
     )
 ;
+
+
+
+create table goods_category(
+    id          serial,
+    name        varchar(20) unique not null);
+
+
+
+create table goods (
+    id              serial primary key,
+    price           numeric         not null,
+    qnt             int             not null,
+    category        varchar(20)     references goods_category(name) not null,
+    title           varchar(50)     not null,
+    description     varchar(255)    not null,
+    producedby      varchar(255)    default null,
+    trademark       varchar(50)     default null,
+    cars            varchar(255)    default null,
+    codeid          varchar(50)     default null,
+    codes           varchar(255)    default null,
+    state           varchar(20)     default null,
+    pic             int references small_pics(id) default null
+);
+
+
+create view goodsview as
+    select goods.*, small_pics.base64
+    from goods left join small_pics
+            on goods.pic=small_pics.id;
+
+
+insert into goods_category(name) values ('Фильтра');
+insert into goods_category(name) values ('Компрессора');
+insert into goods_category(name) values ('Шланги');
+insert into goods_category(name) values ('Масла');
+insert into goods_category(name) values ('Прокладки');
+insert into goods_category(name) values ('Разное');
+
+-- bcrypted password values are password in both users
+INSERT INTO account (name, email, role, password) values ('Admin User', 'admin@tetrao.eu', 'admin', '$2a$10$8K1p/a0dL1LXMIgoEDFrwOfMQbLgtnOoKsWc.6U6H0llP3puzeeEu');
+INSERT INTO account (name, email, role, password) values ('Bob Minion', 'bob@tetrao.eu', 'normal', '$2a$10$8K1p/a0dL1LXMIgoEDFrwOfMQbLgtnOoKsWc.6U6H0llP3puzeeEu');
+INSERT INTO message (content, tag_list) values ('Welcome to the templatesite!', '{"welcome", "first message", "english"}');
+
 
 insert into small_pics values (
 1,
@@ -416,40 +455,6 @@ insert into small_pics values (
                                     UUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABR
                                     RRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB/9k='
 );
-
-create table goods_category(
-    id          serial,
-    name        varchar(20) unique);
-
-insert into goods_category(name) values ('Фильтра');
-insert into goods_category(name) values ('Компрессора');
-insert into goods_category(name) values ('Шланги');
-insert into goods_category(name) values ('Масла');
-insert into goods_category(name) values ('Прокладки');
-insert into goods_category(name) values ('Разное');
-
-
-create table goods (
-    id              serial primary key,
-    price           numeric         not null,
-    qnt             int             not null,
-    category        varchar(20)     references goods_category(name) not null,
-    title           varchar(50)     not null,
-    description     varchar(255)    not null,
-    producedby      varchar(255)    default null,
-    trademark       varchar(50)     default null,
-    cars            varchar(255)    default null,
-    codeid          varchar(50)     default null,
-    codes           varchar(255)    default null,
-    state           varchar(20)     default null,
-    pic             int references small_pics(id) default null
-);
-
-
-create view goodsview as
-    select goods.*, small_pics.base64
-    from goods left join small_pics
-            on goods.pic=small_pics.id;
 
 --- id, price , qnt,
 --- category, title,

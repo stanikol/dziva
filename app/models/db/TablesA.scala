@@ -1,6 +1,6 @@
 //package models.db
 //
-//// AUTO-GENERATED Slick data model [2016-09-18T21:23:09.245+03:00[Europe/Kiev]]
+//// AUTO-GENERATED Slick data model [2016-09-30T11:27:12.725+03:00[Europe/Kiev]]
 //
 ///** Stand-alone Slick data model for immediate use */
 //object Tables extends {
@@ -49,7 +49,7 @@
 //    /** Database column password SqlType(text) */
 //    val password: Rep[String] = column[String]("password")
 //    /** Database column role SqlType(account_role) */
-//    val role: Rep[models.database.AccountRole.Value] = column[models.database.AccountRole.Value]("role")
+//    val role: Rep[models.db.AccountRole.Value] = column[models.db.AccountRole.Value]("role")
 //    /** Database column created_at SqlType(timestamptz) */
 //    val createdAt: Rep[java.time.OffsetDateTime] = column[java.time.OffsetDateTime]("created_at")
 //    /** Database column updated_at SqlType(timestamptz) */
@@ -115,7 +115,7 @@
 //    val pic: Rep[Option[Int]] = column[Option[Int]]("pic", O.Default(None))
 //
 //    /** Foreign key referencing GoodsCategory (database name goods_category_fkey) */
-//    lazy val goodsCategoryFk = foreignKey("goods_category_fkey", Rep.Some(category), GoodsCategory)(r => r.name, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
+//    lazy val goodsCategoryFk = foreignKey("goods_category_fkey", category, GoodsCategory)(r => r.name, onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
 //    /** Foreign key referencing SmallPics (database name goods_pic_fkey) */
 //    lazy val smallPicsFk = foreignKey("goods_pic_fkey", pic, SmallPics)(r => Rep.Some(r.id), onUpdate=ForeignKeyAction.NoAction, onDelete=ForeignKeyAction.NoAction)
 //  }
@@ -124,23 +124,23 @@
 //
 //  /** Entity class storing rows of table GoodsCategory
 //   *  @param id Database column id SqlType(serial), AutoInc
-//   *  @param name Database column name SqlType(varchar), Length(20,true), Default(None) */
-//  case class GoodsCategoryRow(id: Int, name: Option[String] = None)
+//   *  @param name Database column name SqlType(varchar), Length(20,true) */
+//  case class GoodsCategoryRow(id: Int, name: String)
 //  /** GetResult implicit for fetching GoodsCategoryRow objects using plain SQL queries */
-//  implicit def GetResultGoodsCategoryRow(implicit e0: GR[Int], e1: GR[Option[String]]): GR[GoodsCategoryRow] = GR{
+//  implicit def GetResultGoodsCategoryRow(implicit e0: GR[Int], e1: GR[String]): GR[GoodsCategoryRow] = GR{
 //    prs => import prs._
-//    GoodsCategoryRow.tupled((<<[Int], <<?[String]))
+//    GoodsCategoryRow.tupled((<<[Int], <<[String]))
 //  }
 //  /** Table description of table goods_category. Objects of this class serve as prototypes for rows in queries. */
 //  class GoodsCategory(_tableTag: Tag) extends Table[GoodsCategoryRow](_tableTag, "goods_category") {
 //    def * = (id, name) <> (GoodsCategoryRow.tupled, GoodsCategoryRow.unapply)
 //    /** Maps whole row to an option. Useful for outer joins. */
-//    def ? = (Rep.Some(id), name).shaped.<>({r=>import r._; _1.map(_=> GoodsCategoryRow.tupled((_1.get, _2)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+//    def ? = (Rep.Some(id), Rep.Some(name)).shaped.<>({r=>import r._; _1.map(_=> GoodsCategoryRow.tupled((_1.get, _2.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 //
 //    /** Database column id SqlType(serial), AutoInc */
 //    val id: Rep[Int] = column[Int]("id", O.AutoInc)
-//    /** Database column name SqlType(varchar), Length(20,true), Default(None) */
-//    val name: Rep[Option[String]] = column[Option[String]]("name", O.Length(20,varying=true), O.Default(None))
+//    /** Database column name SqlType(varchar), Length(20,true) */
+//    val name: Rep[String] = column[String]("name", O.Length(20,varying=true))
 //
 //    /** Uniqueness Index over (name) (database name goods_category_name_key) */
 //    val index1 = index("goods_category_name_key", name, unique=true)
@@ -239,7 +239,7 @@
 //
 //  /** Entity class storing rows of table SmallPics
 //   *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
-//   *  @param name Database column name SqlType(varchar), Length(20,true)
+//   *  @param name Database column name SqlType(varchar), Length(40,true)
 //   *  @param base64 Database column base64 SqlType(varchar) */
 //  case class SmallPicsRow(id: Int, name: String, base64: String)
 //  /** GetResult implicit for fetching SmallPicsRow objects using plain SQL queries */
@@ -255,8 +255,8 @@
 //
 //    /** Database column id SqlType(serial), AutoInc, PrimaryKey */
 //    val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
-//    /** Database column name SqlType(varchar), Length(20,true) */
-//    val name: Rep[String] = column[String]("name", O.Length(20,varying=true))
+//    /** Database column name SqlType(varchar), Length(40,true) */
+//    val name: Rep[String] = column[String]("name", O.Length(40,varying=true))
 //    /** Database column base64 SqlType(varchar) */
 //    val base64: Rep[String] = column[String]("base64")
 //  }

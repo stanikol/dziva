@@ -1,5 +1,1 @@
-
-
-case class Cl(f1:Int, f2: String)
-val c = Cl(1, "11111")
-c.getClass.getField("f1")
+List(1,2,3,4,5).sliding(3, 3).map (_.toList).toList

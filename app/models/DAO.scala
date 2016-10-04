@@ -18,7 +18,7 @@ import scala.reflect.ClassTag
 class DAO @Inject() (val database: DBService, val cache: CacheApi) {
 
       def categories: Seq[String] = cache.getOrElse[Seq[String]]("categories") {
-        val res = database.run(models.db.Tables.GoodsCategory.map(_.name).result).map(_.getOrElse(""))
+        val res = database.run(models.db.Tables.GoodsCategory.map(_.name).result) //.map(_.getOrElse(""))
         cache.set("categories", res)
         res
       }

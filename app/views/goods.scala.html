@@ -1,7 +1,7 @@
-@(account: Option[Entity[Account]], currentPage: models.Page[models.db.Tables.GoodsviewRow], searchForm : Form[models.FormData.GoodsSearchFormData])(implicit webJarAssets: WebJarAssets, dao: DAO)
+@(account: Option[Entity[Account]], page: models.Page[models.db.Tables.GoodsviewRow], searchForm : Form[models.GoodsSearchFormData])(implicit webJarAssets: WebJarAssets, dao: DAO)
 
 
-@formSubmitBackRoute = @{ if(account.isDefined && account.get.data.isAdmin) routes.RestrictedApplication.edititem(_: Int)
+@formSubmitBackRoute = @{ if(account.isDefined && account.get.data.isAdmin) routes.DzivaApp.edititem(_: Int)
                           else routes.PublicApplication.showitem(_: Int) }
 @import helpers.Hlp._
 
@@ -36,7 +36,7 @@
             <div c lass="col-sm-1">
                 @account.map { user =>
                     @if(user.data.isAdmin){
-                            <a class="btn btn-danger" href="@routes.RestrictedApplication.newitem()">Новый товар</a>
+                            <a class="btn btn-danger" href="@routes.DzivaApp.newitem()">Новый товар</a>
                     }
                 }
             </div>
@@ -50,7 +50,7 @@
             </div>
         </div>
         <!--TABLE WITH GOODS: BODY-->
-        @for( goodsItemWithPic <- currentPage.items ){
+        @for( goodsItemWithPic <- page.items ){
             <div class="row">
                 <a href="@formSubmitBackRoute(goodsItemWithPic.id.get)">
                     <div class="col-sm-3 col-md-3 col-xs-12">
@@ -86,7 +86,7 @@
         <!--PAGINATION-->
         <div id="pagination" >
             <ul class="pagination">
-                @currentPage.prev.map { page =>
+                @page.prev.map { page =>
                     <li class="prev">
                         <a href="@link(page)">&larr; Предыдущая </a>
                     </li>
@@ -96,9 +96,9 @@
                     </li>
                 }
                 <li class="current">
-                    <a>Позиции с @(currentPage.offset + 1) по @(currentPage.offset + currentPage.items.size). Всего @currentPage.total.</a>
+                    <a>Позиции с @(page.offset + 1) по @(page.offset + page.items.size). Всего @page.total.</a>
                 </li>
-                @currentPage.next.map { page =>
+                @page.next.map { page =>
                     <li class="next">
                         <a href="@link(page)">Следующая &rarr;</a>
                     </li>

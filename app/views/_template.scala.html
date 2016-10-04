@@ -20,7 +20,7 @@
 
     <nav class="navbar navbar-default">
         <div class="container-fluid-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
+            <!-- НАЗВАНИЕ И ТЕТЕФОНЫ -->
             <div class="row">
                 <a href="/" class="col-md-8 col-sm-8 col-xs-12">
                     <h3>Авто-климат центр "РЕМ.БЫТ.ТЕХНИКА"</h3>
@@ -32,94 +32,76 @@
                 </div>
             </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <!--<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">-->
-                <ul class="nav navbar-nav hidden-xs">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <span class="glyphicon glyphicon-wrench gi-2x"></span>
-                            <!--Услуги -->
-                            <span class="caret"/>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Ремонт</a></li>
-                            <li><a href="#">Заправка</a></li>
-                            <li><a href="#">Обслуживание</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Консультации</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#">Диагностика</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="glyphicon glyphicon-shopping-cart gi-2x"></i>
-                            <!--Товары-->
-                            <span class="caret"/>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@routes.PublicApplication.goods()">Всё</a></li>
-                            <li role="separator" class="divider"></li>
-                            @for(cat <- dao.categories){
-                                    <li><a href="@routes.PublicApplication.goods(c = cat)">@cat</a></li>
-                            }
-                        </ul>
-                    </li>
-
-
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-
-                        @if(account.isEmpty) {
-                            <li><a href="@routes.Authentication.login()" class="button success">Login</a></li>
-                        } else {
+            <ul class="nav navbar-nav hidden-xs">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="glyphicon glyphicon-wrench gi-2x"></span>
+                        <!--Услуги -->
+                        <span class="caret"/>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Ремонт</a></li>
+                        <li><a href="#">Заправка</a></li>
+                        <li><a href="#">Обслуживание</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Консультации</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Диагностика</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="glyphicon glyphicon-shopping-cart gi-2x"></i>
+                        <!--Товары-->
+                        <span class="caret"/>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="@routes.PublicApplication.goods()">Всё</a></li>
+                        <li role="separator" class="divider"></li>
+                        @for(cat <- dao.categories){
+                                <li><a href="@routes.PublicApplication.goods(c = cat)">@cat</a></li>
+                        }
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                    @if(account.isEmpty) {
+                        <li><a href="@routes.Authentication.login()" class="button success">Login</a></li>
+                    } else {
+                        @if(account.get.data.isAdmin) {
                             <li><a href="@routes.RestrictedApplication.account()" title="Edit Your Account">
                                 <span class="text-danger"> Режим администратора <strong>@account.get.data.name</strong>! </span></a></li>
-                            @if(account.get.data.isAdmin) {
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                        <i class="glyphicon glyphicon-cog"></i>
-                                        Настройки системы <span class="caret"/>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li class="dropdown-header text-danger">Редактирование БД</li>
-                                        <li><a href="#">Категории товаров</a></li>
-                                        <li><a href="#">Картинки</a></li>
-                                        <li><a href="#">Тел. и адресс</a></li>
-                                        <li class="divider"></li>
-                                        <li class="dropdown-header text-danger">Только если понимашь, что делашь !</li>
-                                        <li class="dropdown2">
-                                            <button href="#" class="dropdown-toggle" data-toggle="dropdown2" type="button" >
-                                                <i class="glyphicon glyphicon-cog"></i>
-                                                Настройки БД <span class="caret"/>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li><a href="@routes.RestrictedApplication.newAccount()" title="Add an Account">Add Account</a></li>
-                                            </ul>
-                                        </li>
-                                        <li class="divider"></li>
-                                    </ul>
-                                </li>
-
-                                <!--<li><a href="@routes.RestrictedApplication.newAccount()" title="Add an Account">Add Account</a></li>-->
-
-                        }
-                        <li><a href="@routes.Authentication.logout()" class="button alert">Logout</a></li>
-                        }
-                </ul>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="glyphicon glyphicon-cog"></i>
+                                    Настройки системы <span class="caret"/>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-header text-danger">Редактирование БД</li>
+                                    <li><a href="@routes.DzivaApp.editCategories()">Категории товаров</a></li>
+                                    <li><a href="@routes.DzivaApp.edititemphoto(None)">Картинки</a></li>
+                                    <li><a href="#">Тел. и адресс</a></li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header text-danger">Только если понимашь, что делашь !</li>
+                                    <li><a href="@routes.RestrictedApplication.newAccount()" title="Add an Account">Add Account</a></li>
+                                    <li class="divider"></li>
+                                </ul>
+                            </li>
+                            <!--<li><a href="@routes.RestrictedApplication.newAccount()" title="Add an Account">Add Account</a></li>-->
+                    }
+                    <li><a href="@routes.Authentication.logout()" class="button alert">Logout</a></li>
+                    }
+            </ul>
             <!--</div>&lt;!&ndash; /.navbar-collapse &ndash;&gt;-->
         </div><!-- /.container-fluid-fluid -->
-
-
-
     </nav>
 
+    <!-- ГЛАВНЫЙ КОНТЕЙНЕР -->
 
     <div id="main-content" class="row">
             <!-- <CONTENT> -->
         <div class="col-md-2 col-xs-12 col-sm-2">
             <ul class="nav nav-pills nav-stacked">
-                <!--<li class="active"><a href="#">Home</a></li>-->
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="glyphicon glyphicon-shopping-cart"></i>
@@ -136,7 +118,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <span class="glyphicon glyphicon-wrench"></span>
                         Услуги
-                        <span class="caret">
+                        <span class="caret"/>
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="#">Ремонт</a></li>
@@ -152,7 +134,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <span class="glyphicon glyphicon-fire"></span>
                         Если не работает кондиционер
-                        <span class="caret">
+                        <span class="caret"/>
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="#">Ремонт</a></li>
@@ -168,7 +150,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <span class="glyphicon glyphicon-cog"></span>
                         Блог
-                        <span class="caret">
+                        <span class="caret"/>
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="#">Ремонт</a></li>
@@ -187,9 +169,9 @@
         </div>
 
         <div class="col-md-10 col-xs-12 col-sm-10">
+        <!-- CONTENT  -->
             @content
         </div>
-        <!-- </CONTENT> -->
     </div>
     <div id="footer" class="navbar-fixed-bottom footer">
         <div class="container-fluid">
@@ -201,9 +183,10 @@
     </div>
     <script src="@routes.WebJarAssets.at(webJarAssets.locate("jquery.js"))"></script>
     <script type='text/javascript' src='@routes.WebJarAssets.at(webJarAssets.locate("bootstrap.js"))'></script>
-    <script>$(document).ready(function () {
-                                $('.dropdown-toggle').dropdown();});
-    </script>
-        </div>
+    <!--<script>$(document).ready(-->
+                <!--function () {-->
+                   <!--$('.dropdown-toggle').dropdown();});-->
+    <!--</script>-->
+    </div>
     </body>
 </html>

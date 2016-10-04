@@ -1,37 +1,119 @@
-@(account: Entity[Account], goodsviewRow: models.db.Tables.GoodsviewRow, picsOpt: Option[models.PageOfPics])(implicit webJarAssets: WebJarAssets, request: Request[AnyContent], dao: DAO)
+@(account: Entity[Account], goodsviewRow: Option[models.db.Tables.GoodsviewRow], picsOpt: Option[models.Page[models.db.Tables.SmallPicsRow]], result: Either[String,String])(implicit webJarAssets: WebJarAssets, request: Request[AnyContent], dao: DAO)
 
 @*
  **************
  *@
 @import views.Utils.getParamFromRequest
+@submitFormTo = @{
+    if(goodsviewRow.isDefined)
+        routes.DzivaApp.edititemphoto(id = goodsviewRow.get.id)
+    else
+        routes.DzivaApp.edititemphoto()
+}
+
+
+@****************************************
+* Helper generating navigation links    *
+****************************************@
+@link(newPage: Int) = @{
+    routes.DzivaApp.edititemphoto(
+            id  = goodsviewRow match {case Some(g) => g.id; case _ => None},
+            q   = getParamFromRequest("q"),
+            p   = newPage
+    )
+}
+
 @_template(Some(account))  {
     <div class="container-fluid">
-    @item_table(goodsviewRow)
-    @if(picsOpt.nonEmpty){
-        <form action="@routes.RestrictedApplication.edititemphoto(id = goodsviewRow.id.get)" enctype="multipart/form-data" method="post" role="form">
-            <div class="row">
-                <input type="text"  class="col-md-5"
-                       placeholder="Текст для поиска картинок" name="q" value="@getParamFromRequest("q")"/>
-                <input type="submit" class="col-md-1"
-                       value="Искать" name="action_search"/>
-            </div>
-
-            <div class="row">
-                <a href="@routes.RestrictedApplication.edititem(goodsviewRow.id.get)" class="btn btn-info">ОК</a>
-                <input type="submit" value="Выбрать" name="action_select" class="btn btn-warning"/>
-                <input name="newfile" type="file" class="btn btn-error"/>
-                <input type="hidden" value="@goodsviewRow.id" name="id">
-            </div>
-            <div class="row">
-                @for(pic <- picsOpt.get.pics){
-                        <div class="col-md-2">
-                            <input type="radio" value="@pic.id" name="picid"> @pic.name</input>
-                            <img src="@pic.base64"  class="col-md-12">
+        @if(goodsviewRow.isDefined){
+            @item_table(goodsviewRow.get)
+        }
+        <form action="@submitFormTo" enctype="multipart/form-data" method="post" role="form">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class ="panel-body">
+                        @{ result match {
+                                case Left(msg)  =>   <span class="text-danger">{msg}</span>
+                                case Right(msg) =>   <span class="text-success">{msg}</span>
+                                case _ =>
+                            }
+                        }
+                        @if(goodsviewRow.isDefined){
+                            <a href="@routes.DzivaApp.edititem(goodsviewRow.get.id.get)" class="btn btn-info">Вернуться к редаткированию товара</a>
+                            <input type="hidden" value="@goodsviewRow.get.id" name="id">
+                        }
+                    </div>
+                </div>
+                @if(picsOpt.nonEmpty){
+                    <div class="panel panel-default">
+                        <div class="panel-header h4 text-info">Загрузить картинку</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <input name="newfile" type="file" class="btn btn-error col-md-3"/>
+                                <input type="submit" value="Загрузить файл" name="action_newfile" class="btn btn-warning col-md-2"/>
+                            </div>
                         </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-header h4 text-info">Выбрать картинку</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <input type="text"  class="col-md-5"
+                                       placeholder="Наименование картинки" name="q" value="@getParamFromRequest("q")"/>
+                                <input type="submit" class="btn btn-default col-md-1"
+                                       value="Искать" name="action_search"/>
+                                @if(goodsviewRow.isDefined){
+                                    <input type="submit" value="Выбрать" name="action_select" class="btn btn-warning col-md-1"/>
+                                }
+                                <input type="submit" value="Удалить" name="action_delete" class="btn btn-danger col-md-1"/>
+                                <input type="submit" value="Переименовать" name="action_rename" class="btn btn-danger col-md-2"/>
+                            </div>
+                            @for(row <- picsOpt.get.items.sliding(4, 4)){
+                                <div class="row">
+                                @for(pic <- row){
+                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                        <input type="radio" value="@pic.id" name="picid" >   @pic.name
+                                        <img src="@pic.base64" class="col-md-12 col-sm-12 col-xs-12">
+                                        </input>
+                                    </div>
+                                }
+                                </div>
+                            }
+
+                            @if(picsOpt.isDefined){
+                                @defining(picsOpt.get){ page =>
+                                    <!--PAGINATION-->
+                                    <div id="pagination" >
+                                        <ul class="pagination">
+                                            @page.prev.map { page =>
+                                            <li class="prev">
+                                                <a href="@link(page)">&larr; Предыдущая </a>
+                                            </li>
+                                            }.getOrElse {
+                                            <li class="prev disabled">
+                                                <a>&larr; Предыдущая </a>
+                                            </li>
+                                            }
+                                            <li class="current">
+                                                <a>Позиции с @(page.offset + 1) по @(page.offset + page.items.size). Всего @page.total.</a>
+                                            </li>
+                                            @page.next.map { page =>
+                                            <li class="next">
+                                                <a href="@link(page)">Следующая &rarr;</a>
+                                            </li>
+                                            }.getOrElse {
+                                            <li class="next disabled">
+                                                <a> Следующая &rarr; </a>
+                                            </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
                 }
-                <div></div>
-            </div>
+                </div>
         </form>
-    }
     </div>
 }

@@ -1,0 +1,34 @@
+@(account: Entity[Account], result: Option[Either[String, String]])(implicit webJarAssets: WebJarAssets, dao: DAO)
+
+@_template(Some(account))  {
+    <div class="container-fluid">
+        @{ result match {
+                case Some(Left(msg)) =>
+                    <span class="text-danger">Error: {msg}</span>
+                case Some(Right(msg)) =>
+                    <span class="text-success">OK: {msg}</span>
+                case _ =>
+            }
+        }
+        <form action="@routes.DzivaApp.editCategories()" method="post">
+            <fieldset>
+                <div class="panel panel-warning ">
+                    <div class="panel-heading">Добавление категорий</div>
+                    <div class="panel-body row">
+                        <input type="text" placeholder="Имя новой катерории" name="newcat" class="col-md-6">
+                        <input type="submit" value="Создать новую категорию" name="newcatact" />
+                    </div>
+                </div>
+                <div class="panel panel-danger">
+                    <div class="panel-heading">Удаление категорий</div>
+                    <div class="panel-body raw">
+                        @for(cat <- dao.categories){
+                            <input type="radio" value="@cat" name="delcat"> @cat</input><br>
+                        }
+                        <input type="submit" value="Удалить категорию" name="delcatact" />
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+}

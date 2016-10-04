@@ -20,9 +20,11 @@ GET     /webjars/*file              controllers.WebJarAssets.at(file)
 
 
 GET     /showitem                   controllers.PublicApplication.showitem(id: Int)
-GET     /goodslist                  controllers.PublicApplication.goods(q: String ?= "", c: String ?= "", p: Int ?= 0)
-GET     /newitem                    controllers.RestrictedApplication.newitem
-GET     /edititem                   controllers.RestrictedApplication.edititem(id: Int)
-POST    /edititem                   controllers.RestrictedApplication.edititem(id: Int)
-GET     /edititemphoto              controllers.RestrictedApplication.edititemphoto(id: Int, q: Option[String] ?= None, p: Option[Int] = None)
-POST    /edititemphoto              controllers.RestrictedApplication.edititemphoto(id: Int, q: Option[String] ?= None, p: Option[Int] = None)
+GET     /goods                      controllers.PublicApplication.goods(q: String ?= "", c: String ?= "", p: Int ?= 0)
+GET     /newitem                    controllers.DzivaApp.newitem
+GET     /edititem                   controllers.DzivaApp.edititem(id: Int)
+POST    /edititem                   controllers.DzivaApp.edititem(id: Int)
+GET     /edititemphoto              controllers.DzivaApp.edititemphoto(id: Option[Int] ?= None, q: Option[String] ?= None, p: Int ?= 0)
+POST    /edititemphoto              controllers.DzivaApp.edititemphoto(id: Option[Int] ?= None, q: Option[String] ?= None, p: Int ?= 0)
+GET     /editcategories             controllers.DzivaApp.editCategories()
+POST    /editcategories             controllers.DzivaApp.editCategories()

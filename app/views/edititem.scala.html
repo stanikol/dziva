@@ -10,7 +10,7 @@
 
 @_template(Some(account))  {
     <div class="container-fluid">
-        <form action = '@routes.RestrictedApplication.edititem(itemId)' method="post">
+        <form action = '@routes.DzivaApp.edititem(itemId)' method="post">
             <fieldset>
                 <input id="id"  type="hidden" name="id" value="@itemId" />
                 @for( (col, coltitle) <- models.GoodsItem.header ){
@@ -29,7 +29,7 @@
                     } else { @if(col == "pic") {
                             <label for="@col" class="col-md-2">@coltitle</label>
                             <div class="col-md-4">
-                            <a href="@routes.RestrictedApplication.edititemphoto(itemId)" >
+                            <a href="@routes.DzivaApp.edititemphoto(Some(itemId))" >
                                 <img src="@base64img.getOrElse("No photo")" class="col-md-8">
                             </a>
                                 </div>
@@ -48,7 +48,7 @@
                         <a href="@routes.PublicApplication.goods()" class="btn btn-default"><<На витрину</a>
                         <input name='action' type="submit" value="Сохранить" class="btn btn-primary"/>
                         <input name='action' type="submit" value="Удалить" class="btn btn-danger"/>
-                        <a href="@routes.RestrictedApplication.newitem()" class="btn btn-warning">Новый</a>
+                        <a href="@routes.DzivaApp.newitem()" class="btn btn-warning">Новый</a>
                     </div>
                 </div>
             </fieldset>
