@@ -13,7 +13,7 @@
         <form action = '@routes.DzivaApp.edititem(itemId)' method="post">
             <fieldset>
                 <input id="id"  type="hidden" name="id" value="@itemId" />
-                @for( (col, coltitle) <- models.GoodsItem.header ){
+                @for( (col, coltitle) <- models.GoodsItem.headerFull ){
                     <div class="form-group row">
                     <label for="@col" class="col-md-2">@coltitle</label>
                     @if(col == "category"){

@@ -91,7 +91,7 @@ object Message {
 object GoodsItem {
   val header: ListMap[String, String] = ListMap(
     "price"->"Цена",
-    "qnt"->"Кол",
+//    "qnt"->"Кол",
     "category"->"Категория",
     "title"->"Наименование",
     "description"->"Описание",
