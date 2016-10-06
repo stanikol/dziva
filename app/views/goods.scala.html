@@ -62,7 +62,7 @@
                     </div>
                     <div class="col-sm-6 col-md-6 col-xs-12">
                         <h3>@goodsItemWithPic.title.getOrElse("")</h3>
-                        <h6>@goodsItemWithPic.description.getOrElse("")</h6>
+                        <h6>@goodsItemWithPic.description.getOrElse("").take(99)</h6>
                         <div><span class="text-muted">Категория:</span>
                              <span class="text-primary">@goodsItemWithPic.category.getOrElse("")</span>
                         </div>

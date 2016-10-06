@@ -51,6 +51,14 @@ td.css-codes {
 .gi-4x{font-size: 4em;}
 .gi-5x{font-size: 5em;}
 
+.h-divider{
+     margin-top:5px;
+     margin-bottom:5px;
+     height:1px;
+     width:100%;
+     border-top:1px solid gray;
+}
+
 /*******
 #pagination {
     position: relative;

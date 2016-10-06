@@ -1,0 +1,47 @@
+***********
+How do you convert an InputStream to a base64 string in Scala?
+http://stackoverflow.com/questions/14753153/how-do-you-convert-an-inputstream-to-a-base64-string-in-scala
+
+import org.apache.commons.codec.binary.Base64
+import org.apache.commons.io.IOUtils
+
+val bytes = IOUtils.toByteArray(stream)
+val bytes64 = Base64.encodeBase64(bytes)
+val content = new String(bytes64)
+============
+Here's a simple encoder/decoder I wrote that you can include as source. So, no external dependencies.
+The interface is a bit more scala-esque:
+
+import io.github.marklister.base64.Base64._
+// Same as Lomig Mégard's answer
+val b64 = bytes.toBase64
+***********
+
+***********
+Scala Slick Model with Optional Image column
+http://stackoverflow.com/questions/23837023/scala-slick-model-with-optional-image-column
+
+Otherwise you could use a Blob field as suggested in a comment, there's a test inside the Slick library with JDBC that creates a table with a Blob field:
+
+class T(tag: Tag) extends Table[(Int, Blob)](tag, "test3") {
+  def id = column[Int]("id")
+  def data = column[Blob]("data")
+  def * = (id, data)
+}
+
+val ts = TableQuery[T]
+And then to insert:
+
+ts insert (1, new SerialBlob(Array[Byte](1,2,3)))
+ts insert (2, new SerialBlob(Array[Byte](4,5)))
+Then you can look into java.io.serializable on how to transform a file to bites before storing it into a Blob, this link could help (ignore the sql parts).
+***********
+***********
+
+
+I have found the issue. I have a companion object that was conflicting
+
+If you have a companion object you need to use a slightly different syntax for your * projection:
+
+def * = (id, email, password, permission) <> ((Account.apply _).tupled, Account.unapply)
+

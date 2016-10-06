@@ -27,12 +27,10 @@
                             }
                         </select>
                     } else { @if(col == "pic") {
-                            <div id="@col" class="col-md-4">
-                            <a href="@routes.DzivaApp.edititemphoto(Some(itemId))" >
-                                <img src="@base64img.getOrElse("No photo")" class="col-md-8">
-                            </a>
-                                </div>
-                            <input type="hidden" name="pic" value="@formFieldsValues(col)"/>
+                                <a id="@col" href="@routes.DzivaApp.edititemphoto(Some(itemId))" >
+                                    <img src="@base64img.getOrElse("No photo")" class="col-md-3 col-sm-3 col-xs-3">
+                                </a>
+                                <input type="hidden" name="pic" value="@formFieldsValues(col)"/>
                     } else { @if(col == "description") {
                         <textarea id="@col" name="@col" rows="3" class="col-md-10">@formFieldsValues(col)</textarea>
                     } else {

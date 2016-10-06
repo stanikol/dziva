@@ -59,13 +59,13 @@
                         <div class="panel-body">
                             <div class="row">
                                 <input type="text"  class="col-md-5"
-                                       placeholder="Наименование картинки" name="q" value="@getParamFromRequest("q")"/>
+                                       placeholder="Текст для поиска картинок" name="q" value="@getParamFromRequest("q")"/>
                                 <input type="submit" class="btn btn-default col-md-1"
                                        value="Искать" name="action_search"/>
                                 @if(goodsviewRow.isDefined){
-                                    <input type="submit" value="Выбрать" name="action_select" class="btn btn-warning col-md-1"/>
+                                    <input type="submit" value="Выбрать" name="action_select" class="btn btn-warning col-md-2"/>
                                 }
-                                <input type="submit" value="Удалить" name="action_delete" class="btn btn-danger col-md-1"/>
+                                <input type="submit" value="Удалить" name="action_delete" class="btn btn-danger col-md-2"/>
                                 <input type="submit" value="Переименовать" name="action_rename" class="btn btn-danger col-md-2"/>
                             </div>
                             @for(row <- picsOpt.get.items.sliding(4, 4)){
