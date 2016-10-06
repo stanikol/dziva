@@ -109,7 +109,7 @@ object GoodsItem {
     "category"->"Категория", "title"->"Наименование",
     "description"->"Описание",
     "producedby"->"Производитель", "trademark"->"Торг. марка", "cars"->"Авто",
-    "codeid"->"Код", "codes"->"Др. коды", "state"->"Состояние"/*, "pic"->"Фото"*/)
+    "codeid"->"Код", "codes"->"Др. коды", "state"->"Состояние","pic"->"Фото")
 
 //  def apply(row: Tables.GoodsRow): Entity[GoodsItem] =
 //    Entity(
