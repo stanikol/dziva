@@ -15,8 +15,8 @@
                 <input id="id"  type="hidden" name="id" value="@itemId" />
                 @for( (col, coltitle) <- models.GoodsItem.header ){
                     <div class="form-group row">
+                    <label for="@col" class="col-md-2">@coltitle</label>
                     @if(col == "category"){
-                        <label for="@col" class="col-md-2">@coltitle</label>
                         <select id="@col" name="category" class="col-md-8">
                             @for(cat <- dao.categories){
                                 @if(formFieldsValues("category")==cat.toString){
@@ -27,20 +27,20 @@
                             }
                         </select>
                     } else { @if(col == "pic") {
-                            <label for="@col" class="col-md-2">@coltitle</label>
-                            <div class="col-md-4">
+                            <div id="@col" class="col-md-4">
                             <a href="@routes.DzivaApp.edititemphoto(Some(itemId))" >
                                 <img src="@base64img.getOrElse("No photo")" class="col-md-8">
                             </a>
                                 </div>
                             <input type="hidden" name="pic" value="@formFieldsValues(col)"/>
                     } else { @if(col == "description") {
-                        <label for="@col" class="col-md-2">@coltitle</label>
                         <textarea id="@col" name="@col" rows="3" class="col-md-10">@formFieldsValues(col)</textarea>
                     } else {
-                            <label for="@col" class="col-md-2">@coltitle</label>
                             <input id="@col"  type="text" name="@col" value="@formFieldsValues(col)" class="col-md-10"/>
                     }}}
+                    @if(goodsRowForm(col).hasErrors){
+                        <span class="text-danger"> ОШИБКА: @goodsRowForm.error(col).map(_.message).mkString("! ")  </span>
+                    }
                     </div>
                 }
                 <div class="row">

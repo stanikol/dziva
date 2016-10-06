@@ -49,32 +49,28 @@ class DzivaApp @Inject()(val database: DBService, val cache: CacheApi, implicit 
     val action: Option[String] = play.api.data.Form(single("action"->optional(text))).bindFromRequest.fold(error => None, act => act)
     val actionMessage = s"Редактировать товар($itemId): action == ${action}"
     Logger.info(actionMessage)
-    val supportedActions = Seq("Сохранить", "Удалить")
     action match {
-      case Some(action) if supportedActions.contains(action) =>
-        action match {
-          case "Удалить" =>
-            Logger.info(s"Удалить $itemId")
-            database.runAsync(Tables.Goods.filter(_.id === itemId).delete).map(id =>
-              Redirect(routes.PublicApplication.goods())
+      case Some("Удалить") =>
+        Logger.info(s"Удалить $itemId")
+        database.runAsync(Tables.Goods.filter(_.id === itemId).delete).map(id =>
+          Redirect(routes.PublicApplication.goods())
+        )
+      case Some("Сохранить") =>
+        val msg = s"Сохранить $itemId"
+        Logger.info(msg)
+        editGoodsItemForm.bindFromRequest().fold(
+          { withError =>
+            Logger.error(msg+": "+s"Ошибка чтения данных формы ${withError.hasErrors}\n")
+            Logger.error(msg+": "+s"Данные формы  data=${withError.data}\n")
+            Future.successful(BadRequest(views.html.edititem(loggedIn, withError))) },
+          { goodsItemEntity  =>
+            Logger.info(msg+": "+s"Форма прочитана нормально id=${goodsItemEntity.id}")
+            val insertOrUpdateQuery = Tables.Goods.insertOrUpdate(goodsItemEntity)
+            database.runAsync(insertOrUpdateQuery).map( _ =>
+              Redirect(routes.DzivaApp.edititem(itemId))
             )
-          case "Сохранить" =>
-            val msg = s"Сохранить $itemId"
-            Logger.info(msg)
-            editGoodsItemForm.bindFromRequest().fold(
-              { withError =>
-                Logger.error(msg+": "+s"Ошибка чтения данных формы ${withError.hasErrors}\n")
-                Logger.error(msg+": "+s"Данные формы  data=${withError.data}\n")
-                Future.successful(BadRequest(views.html.edititem(loggedIn, withError))) },
-              { goodsItemEntity  =>
-                Logger.info(msg+": "+s"Форма прочитана нормально id=${goodsItemEntity.id}")
-                val insertOrUpdateQuery = Tables.Goods.insertOrUpdate(goodsItemEntity)
-                database.runAsync(insertOrUpdateQuery).map( _ =>
-                  Redirect(routes.DzivaApp.edititem(itemId))
-                )
-              }
-            )
-        }
+          }
+        )
       case Some(unknown_action) =>
         Logger.error(s"Неизвестный action == $unknown_action!")
         Future.successful(Ok(s"ОШИБКА: Неизвестный action == $unknown_action"))
@@ -86,6 +82,7 @@ class DzivaApp @Inject()(val database: DBService, val cache: CacheApi, implicit 
           Ok(views.html.edititem(loggedIn, form, Some(goodsviewRow.base64.getOrElse("NO PHOTO"))))
         }
     }
+//    Future.successful(NotImplemented("Fuck them all !"))
   }
 
   /**

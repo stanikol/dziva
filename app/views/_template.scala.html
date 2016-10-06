@@ -6,7 +6,7 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Авто кондиционеры Рем.Быт.Техника </title>
-        <link href="@routes.Assets.at("img/favicon.png")" rel="shortcut icon">
+        <link href="routes.Assets.at("img/favicon.png")" rel="shortcut icon">
         @****
         <link rel='stylesheet' href="@routes.WebJarAssets.at(webJarAssets.locate("foundation.css"))">
         <link rel='stylesheet' href="@routes.WebJarAssets.at(webJarAssets.locate("foundation-icons.css"))">
@@ -40,13 +40,14 @@
                         <span class="caret"/>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Ремонт</a></li>
-                        <li><a href="#">Заправка</a></li>
-                        <li><a href="#">Обслуживание</a></li>
+                        <li><a href="/html/repiar.html">Ремонт</a></li>
+                        <li><a href="/html/charging.html">Заправка</a></li>
+                        <li><a href="/html/service.html">Обслуживание</a></li>
+                        <li><a href="/html/antibacter.html">Антибактериальная обработка</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="#">Консультации</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="#">Диагностика</a></li>
+                        <li><a href="/html/diagnostic.html">Диагностика</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -103,6 +104,23 @@
         <div class="col-md-2 col-xs-12 col-sm-2">
             <ul class="nav nav-pills nav-stacked">
                 <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="glyphicon glyphicon-wrench"></span>
+                        Авто-кондиционеры
+                        <span class="caret"/>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/html/repiar.html">Ремонт</a></li>
+                        <li><a href="/html/charging.html">Заправка</a></li>
+                        <li><a href="/html/antibacter.html">Антибактериальная обработка</a></li>
+                        <li><a href="/html/service.html">Обслуживание</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Консультации</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Диагностика</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="glyphicon glyphicon-shopping-cart"></i>
                         Товары <span class="caret"></a>
@@ -112,22 +130,6 @@
                         @for(cat <- dao.categories){
                         <li><a href="@routes.PublicApplication.goods(c = cat)">@cat</a></li>
                         }
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <span class="glyphicon glyphicon-wrench"></span>
-                        Услуги
-                        <span class="caret"/>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Ремонт</a></li>
-                        <li><a href="#">Заправка</a></li>
-                        <li><a href="#">Обслуживание</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Консультации</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Диагностика</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -183,10 +185,10 @@
     </div>
     <script src="@routes.WebJarAssets.at(webJarAssets.locate("jquery.js"))"></script>
     <script type='text/javascript' src='@routes.WebJarAssets.at(webJarAssets.locate("bootstrap.js"))'></script>
-    <!--<script>$(document).ready(-->
-                <!--function () {-->
-                   <!--$('.dropdown-toggle').dropdown();});-->
-    <!--</script>-->
+    <script>$(document).ready(
+                function () {
+                   $('.dropdown-toggle').dropdown();});
+    </script>
     </div>
     </body>
 </html>

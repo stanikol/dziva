@@ -28,3 +28,4 @@ GET     /edititemphoto              controllers.DzivaApp.edititemphoto(id: Optio
 POST    /edititemphoto              controllers.DzivaApp.edititemphoto(id: Option[Int] ?= None, q: Option[String] ?= None, p: Int ?= 0)
 GET     /editcategories             controllers.DzivaApp.editCategories()
 POST    /editcategories             controllers.DzivaApp.editCategories()
+GET     /html/*content              controllers.PublicApplication.showhtml(content)

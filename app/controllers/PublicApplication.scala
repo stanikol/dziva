@@ -1,14 +1,14 @@
 package controllers
 
-import javax.inject.{Inject, Singleton}
+import java.io.FileInputStream
+import javax.inject.{Inject, Provider, Singleton}
 
 import jp.t2v.lab.play2.auth.OptionalAuthElement
 import models._
 import models.db.Tables
-import play.api.mvc.Controller
-import services.db.DBService
+import play.api.mvc.{Controller, Result}
 import models.db.{AccountRole, Tables}
-import play.api.Logger
+import play.api.{Application, Logger}
 import play.api.mvc.Controller
 import services.db.DBService
 
@@ -21,18 +21,30 @@ import utils.db.TetraoPostgresDriver.api._
 import play.api.i18n.Messages.Implicits._
 
 import scala.concurrent.Future
+import play.api.cache.Cached
+import play.twirl.api.Html
+
+import scala.util.Try
 
 @Singleton
-class PublicApplication @Inject()(val database: DBService, val cache: CacheApi, implicit val webJarAssets: WebJarAssets,implicit  val dao: DAO)
+class PublicApplication @Inject()(val database: DBService, cache: CacheApi, appProvider : Provider[Application], implicit val webJarAssets: WebJarAssets,implicit  val dao: DAO)
   extends Controller with AuthConfigTrait with OptionalAuthElement {
 
+  lazy val currentApplication: Application = appProvider.get()
 
   def index() = StackAction { implicit request =>
     Ok(views.html.index(loggedIn))
   }
 
+  def showhtml(filename: String) = StackAction { implicit request =>
+    lazy val fileRelPath = "public/content/"+filename
+    lazy val html = scala.io.Source.fromFile(currentApplication.getFile(fileRelPath)).mkString
+    Ok(views.html._template(loggedIn)(Html(Try(html).getOrElse(s"<h1 class='text-danger'>Файл '$filename' не найден!</h1>"))))
+  }
+
 
   def goods(q: String, c: String, p: Int) = AsyncStack { implicit request =>
+//    cache.getOrElse[Future[Result]](s"goods($q,$c,$p,$loggedIn)"){
     val form: GoodsSearchFormData = searchGoodsForm.bindFromRequest.fold(
       withError => GoodsSearchFormData(q, c),   ok => ok
     )
@@ -55,9 +67,12 @@ class PublicApplication @Inject()(val database: DBService, val cache: CacheApi, 
     val pageSize = 2
     val offest = pageSize * p
     val goodsF: Future[Seq[GoodsviewRow]] = database.runAsync(qry.sortBy(_.id).drop(offest).take(pageSize).result)
-    for(total <- totalF; goodsviewRows <- goodsF)
+    val res = for(total <- totalF; goodsviewRows <- goodsF)
       yield  Ok( views.html.goods(loggedIn, Page(goodsviewRows, p, offest, total), searchGoodsForm.fill(form)) )
-  }
+//    cache.set(s"goods($q,$c,$p,$loggedIn)", res)
+    res
+//  }
+}
 
 
   def showitem(itemId: Int) = AsyncStack { implicit request =>

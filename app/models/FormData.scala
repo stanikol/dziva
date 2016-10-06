@@ -40,19 +40,24 @@ object FormData {
 
   val addAccount = accountForm(nonEmptyText)
 
+  implicit class ValidateTextLength(text: Mapping[String]) {
+    def validateLength(maxLenght: Int) =
+      text.verifying(s"Превышено максимальное количество символов, не более $maxLenght !", {_.length <= maxLenght })
+  }
+
   val editGoodsItemForm = Form(mapping(
-      "id"  ->  number,
-      "price"       -> bigDecimal,
-      "qnt"         -> number,
-      "category"    -> text,
-      "title"       -> text,
-      "description" -> text,
-      "producedby"  -> optional(text),
-      "trademark"   -> optional(text),
-      "cars"        -> optional(text),
-      "codeid"      -> optional(text),
-      "codes"       -> optional(text),
-      "state"       -> optional(text),
+      "id"          ->  number,
+      "price"       -> bigDecimal.verifying(s"Цена дложна быть больше нуля !", {_ >=0 }),
+      "qnt"         -> number.verifying(s"Количество может целым, большим нуля !", {_ >=0 }),
+      "category"    -> nonEmptyText.validateLength(20),
+      "title"       -> nonEmptyText.validateLength(50),
+      "description" -> nonEmptyText.validateLength(255),
+      "producedby"  -> optional(text.validateLength(255)),
+      "trademark"   -> optional(text.validateLength(50)),
+      "cars"        -> optional(text.validateLength(255)),
+      "codeid"      -> optional(text.validateLength(50)),
+      "codes"       -> optional(text.validateLength(255)),
+      "state"       -> optional(text.validateLength(20)),
       "pic"         -> optional(number)
     )(db.Tables.GoodsRow.apply)(db.Tables.GoodsRow.unapply)
   )
