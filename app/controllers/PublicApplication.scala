@@ -39,7 +39,7 @@ class PublicApplication @Inject()(val database: DBService, cache: CacheApi, appP
   def showhtml(filename: String) = StackAction { implicit request =>
     lazy val fileRelPath = "/public/content/"+filename
     lazy val html = scala.io.Source.fromFile(currentApplication.getFile(fileRelPath)).mkString
-    Ok(views.html._template(loggedIn)(Html(Try(html).getOrElse(s"<h1 class='text-danger'>Файл '$filename' не найден!</h1>"))))
+    Ok(views.html._template(loggedIn)(Html(Try(html).getOrElse(s"<h1 class='text-danger'>Файл '$fileRelPath' не найден!</h1>"))))
   }
 
 
